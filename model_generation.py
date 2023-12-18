@@ -11,19 +11,14 @@ parameter_combinations = list(product(hidden_layer_sizes, activations, solvers, 
 
 def create_model(hidden_layer_size, activation, solver, learning_rate, warm_start, output_shape, input_shape):
     model = tf.keras.Sequential()
-    
     model.add(tf.keras.layers.Dense(hidden_layer_size, activation=activation, input_shape=(input_shape,)))
-    
     model.add(tf.keras.layers.Dense(output_shape, activation='softmax'))
     if solver == 'sgd':
         optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate, momentum=0.9, nesterov=True if warm_start else False)
     elif solver == 'adam':
         optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate, beta_1=0.9, beta_2=0.999)
-        
     model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
     return model
-
-
 
 for i, params in enumerate(parameter_combinations):
     hidden_layer_size, activation, solver, learning_rate, warm_start = params
