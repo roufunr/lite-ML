@@ -1,7 +1,10 @@
+
+import tensorflow as tf
+
 hidden_layer_sizes = [20, 40, 60, 80, 100, 120, 140, 160, 180]
-activations = ['identity', 'logisitc', 'tanh', 'relu']
-solvers = ['lbfgs', 'sgd', 'adam']
-learning_rates = ['contant', 'invscaling', 'adaptive']
+activations = [tf.identity, tf.keras.activations.sigmoid, tf.keras.activations.tanh, tf.keras.activations.relu]
+solvers = ['sgd', 'adam']
+learning_rates = [0.1, 0.2, 0.3, 0.4, 0.5]
 warm_starts = [True, False]
 parameterSets = []
 i = 0
