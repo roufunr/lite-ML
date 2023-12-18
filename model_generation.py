@@ -3,6 +3,8 @@ from itertools import product
 import os
 import pandas
 import numpy as np
+import csv
+import time
 
 hidden_layer_sizes = [20, 40, 60, 80, 100, 120, 140, 160, 180]
 activations = {
@@ -12,14 +14,14 @@ activations = {
     'relu': tf.keras.activations.relu
 }
 solvers = ['sgd', 'adam']
-learning_rates = [0.1, 0.2, 0.3, 0.4, 0.5]
-batch_sizes = [16, 32, 64, 128]
-epochs = [10, 20, 30, 40, 50]
-val_splits = [0.10, 0.15, 0.20, 0.25, 0.30]
+learning_rates = [0.1, 0.2, 0.3]
+batch_sizes = [32, 64]
+epochs = [50]
+val_splits = [0.20]
 
 total_simple_for_each_device = 20
 
-dataset_path = '/Users/abdurrouf/Documents/TensorflowLiteData/F/'
+dataset_path = '/home/rouf-linux/TensorflowLiteData/F/'
 
 def create_model(hidden_layer_size, activation, solver, learning_rate, output_shape, input_shape):
     model = tf.keras.Sequential()
@@ -80,19 +82,26 @@ def train_models(data, device_mapper):
     for device_idx in range(len(data)):
         for sample in data[device_idx]:
             X.append(sample)
-            Y.append(device_idx)
+            y = [0 for i in range(23)]
+            y[device_idx] = 1
+            Y.append(y)
     X = np.array(X)
     Y = np.array(Y)
     parameter_combinations = list(product(hidden_layer_sizes, activations, solvers, learning_rates))
     model_counter = 1
+    csv_params = []
+    header = ['hidden_layer_size', 'activation', 'solver', 'learning_rate', 'num_of_epochs', 'batch_size', 'validation_split', 'training_time (ms)']
+    csv_params.append(header)
     for params in parameter_combinations:
         for epoch in epochs:
             for batch_size in batch_sizes:
                 for val_split in val_splits: 
                     hidden_layer_size, activation, solver, learning_rate = params
                     input_shape = X[0].shape  # Update this based on your actual input shape
-                    model = create_model(hidden_layer_size, activation, solver, learning_rate, 1, input_shape)
+                    model = create_model(hidden_layer_size, activation, solver, learning_rate, 23, input_shape)
+                    start_time = time.time() * 1000
                     model.fit(X, Y, epochs=epoch, batch_size=batch_size, validation_split=val_split)
+                    end_time = time.time() * 1000
                     model.save("models/tf/"+ str(model_counter))
                     print("models/tf/"+ str(model_counter) + " DONE")
                     
@@ -103,8 +112,16 @@ def train_models(data, device_mapper):
                         print("models/lite/" + str(model_counter) + " DONE")
                     
                     model_counter += 1
-                    if model_counter == 10: 
-                        return 0
+                    csv_params.append([hidden_layer_size, activation, solver, learning_rate, epoch, batch_size, val_split, end_time - start_time])
+    
+                    file_path = 'params.csv'
+
+                    # Writing the 2D list to a CSV file
+                    with open(file_path, 'w', newline='') as csvfile:
+                        csv_writer = csv.writer(csvfile)
+                        csv_writer.writerows(csv_params)
+
+                    print(f"Data has been written to {file_path}")
                     
     
     
