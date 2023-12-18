@@ -103,6 +103,8 @@ def train_models(data, device_mapper):
                         print("models/lite/" + str(model_counter) + " DONE")
                     
                     model_counter += 1
+                    if model_counter == 10: 
+                        return 0
                     
     
     
