@@ -5,6 +5,7 @@ import pandas
 import numpy as np
 import csv
 import time
+from sklearn.preprocessing import MinMaxScaler
 
 hidden_layer_sizes = [20, 40, 60, 80, 100, 120, 140, 160, 180]
 activations = {
@@ -14,10 +15,10 @@ activations = {
     'relu': tf.keras.activations.relu
 }
 solvers = ['sgd', 'adam']
-learning_rates = [0.1, 0.2, 0.3]
-batch_sizes = [32, 64]
-epochs = [50]
-val_splits = [0.20]
+learning_rates = [0.001, 0.01, 0.1]
+batch_sizes = [32]
+epochs = [20]
+val_splits = [0.2]
 
 total_simple_for_each_device = 20
 
@@ -61,7 +62,7 @@ def get_device_mapper():
         mapper[devices_id[i]] = i
     return mapper
 
-def preprocess_data():
+def load_data():
     device_mapper = get_device_mapper()
     print(device_mapper)
     data = []
@@ -87,6 +88,12 @@ def train_models(data, device_mapper):
             Y.append(y)
     X = np.array(X)
     Y = np.array(Y)
+
+    scaler = MinMaxScaler()
+    X = scaler.fit_transform(X)
+
+    
+
     parameter_combinations = list(product(hidden_layer_sizes, activations, solvers, learning_rates))
     model_counter = 1
     csv_params = []
@@ -98,7 +105,8 @@ def train_models(data, device_mapper):
                 for val_split in val_splits: 
                     hidden_layer_size, activation, solver, learning_rate = params
                     input_shape = X[0].shape  # Update this based on your actual input shape
-                    model = create_model(hidden_layer_size, activation, solver, learning_rate, 23, input_shape)
+                    output_shape = Y[0].shape
+                    model = create_model(hidden_layer_size, activation, solver, learning_rate, output_shape[0], input_shape)
                     start_time = time.time() * 1000
                     model.fit(X, Y, epochs=epoch, batch_size=batch_size, validation_split=val_split)
                     end_time = time.time() * 1000
@@ -123,18 +131,14 @@ def train_models(data, device_mapper):
 
                     print(f"Data has been written to {file_path}")
                     
-    
-    
-
-
 
 device_mapper = get_device_mapper()
-data = preprocess_data()
-print(np.array(data).shape)
+data = load_data()
 train_models(data, device_mapper)
 
 
 # Evaluate or use the model as needed
 # evaluation = model.evaluate(X_test, y_test)  # Replace X_test, y_test with your test data
 # predictions = model.predict(X_test)  # Replace X_test with the data you want to make predictions on
+
             
