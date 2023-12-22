@@ -1,4 +1,4 @@
-hidden_layer_size,number_of_hidden_layer,activation, solver,learning_rate,batch_size,epoch
+hidden_layer_size,number_of_hidden_layer,activation,solver,learning_rate,batch_size,epoch
 20,2,identity,sgd,0.001,8,20
 20,2,identity,sgd,0.001,8,40
 20,2,identity,sgd,0.001,8,60

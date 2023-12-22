@@ -28,7 +28,7 @@ epochs = [20, 40, 60, 80]
 # epochs = [60]
 
 parameter_combinations = list(product(hidden_layer_sizes,number_of_hidden_layers, activations, solvers, learning_rates, batch_sizes, epochs))
-csv_data = [['hidden_layer_size','number_of_hidden_layer', 'activation',' solver', 'learning_rate', 'batch_size', 'epoch']]
+csv_data = [['hidden_layer_size','number_of_hidden_layer', 'activation', 'solver', 'learning_rate', 'batch_size', 'epoch']]
 for param in parameter_combinations:
     hidden_layer_size, number_of_hidden_layer, activation, solver, learning_rate, batch_size, epoch = param
     csv_data.append([hidden_layer_size, number_of_hidden_layer, activation, solver, learning_rate, batch_size, epoch])
