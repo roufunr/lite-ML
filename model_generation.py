@@ -1,32 +1,61 @@
 import tensorflow as tf
-from itertools import product
 import os
 import pandas
 import numpy as np
 import csv
 import time
 from sklearn.preprocessing import MinMaxScaler
+import logging
 
-hidden_layer_sizes = [20, 40, 60, 80, 100, 120, 140, 160, 180]
+
+logging.basicConfig(level=logging.INFO,  
+                    format='%(asctime)s - %(levelname)s - %(message)s',
+                    filename='example.log',  # Specify the log file
+                    filemode='a') 
+
+logger = logging.getLogger(__name__)
+
+# hidden_layer_sizes = [20, 40, 60, 80, 100, 120, 140, 160, 180]
+# number_of_hidden_layers = [2, 4, 6, 8]
+# activations = {
+#     'identity': tf.identity, 
+#     'sigmoid': tf.keras.activations.sigmoid, 
+#     'tanh': tf.keras.activations.tanh,
+#     'relu': tf.keras.activations.relu
+# }
+# solvers = ['sgd', 'adam']
+# learning_rates = [0.001, 0.01, 0.1]
+# batch_sizes = [8, 16, 32, 64]
+# epochs = [20, 40, 60, 80]
+
+# hidden_layer_sizes = [60]
+# number_of_hidden_layers = [2]
+# activations = {
+#     'sigmoid': tf.keras.activations.sigmoid
+# }
+# solvers = ['adam']
+# learning_rates = [0.1]
+# batch_sizes = [16]
+# epochs = [60]
+
+
 activations = {
     'identity': tf.identity, 
     'sigmoid': tf.keras.activations.sigmoid, 
     'tanh': tf.keras.activations.tanh,
     'relu': tf.keras.activations.relu
 }
-solvers = ['sgd', 'adam']
-learning_rates = [0.001, 0.01, 0.1]
-batch_sizes = [32]
-epochs = [20]
-val_splits = [0.2]
 
+val_splits = [0.2]
 total_simple_for_each_device = 20
 
 dataset_path = '/home/rouf-linux/TensorflowLiteData/F/'
 
-def create_model(hidden_layer_size, activation, solver, learning_rate, output_shape, input_shape):
+def create_model(hidden_layer_size, num_hidden_layers, activation, solver, learning_rate, output_shape, input_shape):
     model = tf.keras.Sequential()
     model.add(tf.keras.layers.Dense(hidden_layer_size, activation=activations[activation], input_shape=input_shape))
+    for _ in range(num_hidden_layers - 1):
+        model.add(tf.keras.layers.Dense(hidden_layer_size, activation=activations[activation]))
     model.add(tf.keras.layers.Dense(output_shape, activation='softmax'))
     if solver == 'sgd':
         optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate)
@@ -34,16 +63,6 @@ def create_model(hidden_layer_size, activation, solver, learning_rate, output_sh
         optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
     model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
     return model
-
-
-
-    # Train your model with appropriate data and hyperparameters
-    # model.fit(X_train, y_train, epochs=num_epochs, batch_size=batch_size, validation_data=(X_val, y_val))
-    # Replace X_train, y_train, X_val, y_val with your training and validation data
-    
-    # Evaluate or use the model as needed
-    # evaluation = model.evaluate(X_test, y_test)  # Replace X_test, y_test with your test data
-    # predictions = model.predict(X_test)  # Replace X_test with the data you want to make predictions on
 
 def get_device_mapper():
     file_names = os.listdir(dataset_path)
@@ -64,7 +83,6 @@ def get_device_mapper():
 
 def load_data():
     device_mapper = get_device_mapper()
-    print(device_mapper)
     data = []
     for device_id in device_mapper:
         device_samples = []
@@ -77,7 +95,7 @@ def load_data():
         data.append(device_samples)
     return data
 
-def train_models(data, device_mapper):
+def preprocess_data(data):
     X = []
     Y = []
     for device_idx in range(len(data)):
@@ -88,57 +106,49 @@ def train_models(data, device_mapper):
             Y.append(y)
     X = np.array(X)
     Y = np.array(Y)
-
     scaler = MinMaxScaler()
     X = scaler.fit_transform(X)
+    return X,Y
 
-    
-
-    parameter_combinations = list(product(hidden_layer_sizes, activations, solvers, learning_rates))
+def train_models(data):
+    X,Y = preprocess_data(data)
+    df = pandas.read_csv("params.csv")
     model_counter = 1
-    csv_params = []
-    header = ['hidden_layer_size', 'activation', 'solver', 'learning_rate', 'num_of_epochs', 'batch_size', 'validation_split', 'training_time (ms)']
-    csv_params.append(header)
-    for params in parameter_combinations:
-        for epoch in epochs:
-            for batch_size in batch_sizes:
-                for val_split in val_splits: 
-                    hidden_layer_size, activation, solver, learning_rate = params
-                    input_shape = X[0].shape  # Update this based on your actual input shape
-                    output_shape = Y[0].shape
-                    model = create_model(hidden_layer_size, activation, solver, learning_rate, output_shape[0], input_shape)
-                    start_time = time.time() * 1000
-                    model.fit(X, Y, epochs=epoch, batch_size=batch_size, validation_split=val_split)
-                    end_time = time.time() * 1000
-                    model.save("models/tf/"+ str(model_counter))
-                    print("models/tf/"+ str(model_counter) + " DONE")
-                    
-                    converter = tf.lite.TFLiteConverter.from_keras_model(model)
-                    tflite_model = converter.convert()
-                    with open("models/lite/" + str(model_counter) + ".tflite", "wb") as f:
-                        f.write(tflite_model)
-                        print("models/lite/" + str(model_counter) + " DONE")
-                    
-                    model_counter += 1
-                    csv_params.append([hidden_layer_size, activation, solver, learning_rate, epoch, batch_size, val_split, end_time - start_time])
-    
-                    file_path = 'params.csv'
+    for index, row in df.iterrows():
+        param_idx = index
+        logger.info(str(param_idx) + "::: Training :::")
+        
+        hidden_layer_size = row['hidden_layer_size']
+        number_of_hidden_layer = row['number_of_hidden_layer']
+        activation = row['activation']
+        solver = row['solver']
+        learning_rate = row['learning_rate']
+        batch_size = row['batch_size']
+        epoch = row['epoch']
+        
+        input_shape = X[0].shape
+        output_shape = Y[0].shape
+        model = create_model(hidden_layer_size, number_of_hidden_layer, activation, solver, learning_rate, output_shape[0], input_shape)
+        start_time = time.time() * 1000
+        model.fit(X, Y, epochs=epoch, batch_size=batch_size, validation_split=val_splits[0])
+        end_time = time.time() * 1000
+        logger.info(str(param_idx) + "::: Elapsed Time ::: " + str(end_time - start_time))
+        
+        model.save("models/tf/"+ str(model_counter))
+        logger.info("models/tf/"+ str(model_counter) + " DONE")
 
-                    # Writing the 2D list to a CSV file
-                    with open(file_path, 'w', newline='') as csvfile:
-                        csv_writer = csv.writer(csvfile)
-                        csv_writer.writerows(csv_params)
+        converter = tf.lite.TFLiteConverter.from_keras_model(model)
+        tflite_model = converter.convert()
+        with open("models/lite/" + str(model_counter) + ".tflite", "wb") as f:
+            f.write(tflite_model)
+            logger.info("models/lite/" + str(model_counter) + " DONE")
+        model_counter += 1
 
-                    print(f"Data has been written to {file_path}")
-                    
-
-device_mapper = get_device_mapper()
+start_time = time.time()     
 data = load_data()
-train_models(data, device_mapper)
+train_models(data)
+end_time = time.time()
 
-
-# Evaluate or use the model as needed
-# evaluation = model.evaluate(X_test, y_test)  # Replace X_test, y_test with your test data
-# predictions = model.predict(X_test)  # Replace X_test with the data you want to make predictions on
+logger.info("Total training time " + str(round((end_time - start_time)/60)) + " minutes")
 
             

@@ -6,6 +6,7 @@ import numpy as np
 import tensorflow as tf
 from sklearn.preprocessing import MinMaxScaler
 from sklearn import metrics
+import time
 
 
 dataset_path = '/home/rouf-linux/TensorflowLiteData/F/'
@@ -63,6 +64,7 @@ def run_prediction(X, Y, model_idx):
 
     return precision, recall, f1
 
+s_time = time.time()
 X, Y = load_test_data()
 csv_report = []
 for i in range(1, 217):
@@ -77,6 +79,8 @@ with open(file_path, 'w', newline='') as csvfile:
     csv_writer.writerows(csv_report)
 
 print(f"Data has been written to {file_path}")
+e_time = time.time()
+print((e_time - s_time))
 
     
 
