@@ -7,6 +7,15 @@ import tensorflow as tf
 from sklearn.preprocessing import MinMaxScaler
 from sklearn import metrics
 import time
+import logging
+
+
+logging.basicConfig(level=logging.INFO,  
+                    format='%(asctime)s - %(levelname)s - %(message)s',
+                    filename='infer.log',  # Specify the log file
+                    filemode='a') 
+
+logger = logging.getLogger(__name__)
 
 
 dataset_path = '/home/rouf-linux/TensorflowLiteData/F/'
@@ -67,9 +76,10 @@ def run_prediction(X, Y, model_idx):
 s_time = time.time()
 X, Y = load_test_data()
 csv_report = []
-for i in range(1, 217):
+for i in range(1, 13824 + 1):
     precision, recall, f1 = run_prediction(X,Y, i)
     csv_report.append([i, precision, recall, f1])
+    logger.info("DONE ::: " + str(i))
 
 file_path = 'precision.csv'
 
