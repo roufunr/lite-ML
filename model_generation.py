@@ -1,5 +1,6 @@
 import tensorflow as tf
 import os
+import sys
 import pandas
 import numpy as np
 import csv
@@ -110,43 +111,54 @@ def preprocess_data(data):
     X = scaler.fit_transform(X)
     return X,Y
 
-def train_models(data):
+def train_models(data, fromIdx, offset):
     X,Y = preprocess_data(data)
     df = pandas.read_csv("params.csv")
-    model_counter = 1
-    for index, row in df.iterrows():
-        param_idx = index
-        logger.info(str(param_idx) + "::: Training :::")
-        
-        hidden_layer_size = row['hidden_layer_size']
-        number_of_hidden_layer = row['number_of_hidden_layer']
-        activation = row['activation']
-        solver = row['solver']
-        learning_rate = row['learning_rate']
-        batch_size = row['batch_size']
-        epoch = row['epoch']
-        
-        input_shape = X[0].shape
-        output_shape = Y[0].shape
-        model = create_model(hidden_layer_size, number_of_hidden_layer, activation, solver, learning_rate, output_shape[0], input_shape)
-        start_time = time.time() * 1000
-        model.fit(X, Y, epochs=epoch, batch_size=batch_size, validation_split=val_splits[0])
-        end_time = time.time() * 1000
-        logger.info(str(param_idx) + "::: Elapsed Time ::: " + str(end_time - start_time))
-        
-        model.save("models/tf/"+ str(model_counter))
-        logger.info("models/tf/"+ str(model_counter) + " DONE")
+    model_counter = fromIdx + 1
+    i = 0
+    for index, row in df.loc[fromIdx:].iterrows():
+        if i < offset:
 
-        converter = tf.lite.TFLiteConverter.from_keras_model(model)
-        tflite_model = converter.convert()
-        with open("models/lite/" + str(model_counter) + ".tflite", "wb") as f:
-            f.write(tflite_model)
-            logger.info("models/lite/" + str(model_counter) + " DONE")
-        model_counter += 1
+            param_idx = index
+            logger.info(str(model_counter) + "::: Training :::")
+            
+            hidden_layer_size = row['hidden_layer_size']
+            number_of_hidden_layer = row['number_of_hidden_layer']
+            activation = row['activation']
+            solver = row['solver']
+            learning_rate = row['learning_rate']
+            batch_size = row['batch_size']
+            epoch = row['epoch']
+            
+            input_shape = X[0].shape
+            output_shape = Y[0].shape
+            model = create_model(hidden_layer_size, number_of_hidden_layer, activation, solver, learning_rate, output_shape[0], input_shape)
+            start_time = time.time() * 1000
+            model.fit(X, Y, epochs=epoch, batch_size=batch_size, validation_split=val_splits[0])
+            end_time = time.time() * 1000
+            logger.info(str(model_counter) + "::: Elapsed Time ::: " + str(end_time - start_time))
+            
+            model.save("models/tf/"+ str(model_counter))
+            logger.info("models/tf/"+ str(model_counter) + " DONE")
+
+            converter = tf.lite.TFLiteConverter.from_keras_model(model)
+            tflite_model = converter.convert()
+            with open("models/lite/" + str(model_counter) + ".tflite", "wb") as f:
+                f.write(tflite_model)
+                logger.info("models/lite/" + str(model_counter) + " DONE")
+            model_counter += 1
+            tf.keras.backend.clear_session()
+        else: 
+            break
+        i += 1
+        
 
 start_time = time.time()     
 data = load_data()
-train_models(data)
+# Get command-line arguments
+fromIdx = int(sys.argv[1])
+offset = int(sys.argv[2])
+train_models(data, fromIdx, offset)
 end_time = time.time()
 
 logger.info("Total training time " + str(round((end_time - start_time)/60)) + " minutes")
