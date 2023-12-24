@@ -48,8 +48,6 @@ def load_test_data():
 
 def run_prediction(X, Y, model_idx):
     tf_model = tf.keras.models.load_model("models/tf/" + str(model_idx))
-    interpreter = tf.lite.Interpreter(model_path="models/lite/" +  str(model_idx) + ".tflite")
-    interpreter.allocate_tensors()
     predictions = tf_model.predict(X)
 
     one_hot_predictions = []
@@ -58,7 +56,6 @@ def run_prediction(X, Y, model_idx):
         one_hot_prediction[np.argmax(prediction)] = 1
         one_hot_predictions.append(one_hot_prediction.tolist())
     one_hot_predictions = np.array(one_hot_predictions)
-
 
     predicted_labels = one_hot_predictions
 
@@ -73,11 +70,31 @@ def run_prediction(X, Y, model_idx):
 
     return precision, recall, f1
 
+def run_inference_lite(X, Y, model_idx):
+    interpreter = tf.lite.Interpreter(model_path="models/lite/" + str(model_idx) + ".tflite")
+    interpreter.allocate_tensors()
+    input_tensor_index = interpreter.get_input_details()[0]['index']
+    interpreter.set_tensor(input_tensor_index, np.array([X[0]]).astype(np.float32))  # Ensure input data is FLOAT32
+    interpreter.invoke()
+    output_tensor_index = interpreter.get_output_details()[0]['index']
+    predictions = interpreter.get_tensor(output_tensor_index)
+    one_hot_predictions = np.zeros_like(predictions)
+    one_hot_predictions[np.arange(len(predictions)), np.argmax(predictions, axis=1)] = 1
+
+    accuracy = metrics.accuracy_score(Y, one_hot_predictions)
+    print(f'Model {model_idx} Accuracy: {accuracy}')
+
+    precision = metrics.precision_score(Y, one_hot_predictions, average='weighted')
+    recall = metrics.recall_score(Y, one_hot_predictions, average='weighted')
+    f1 = metrics.f1_score(Y, one_hot_predictions, average='weighted')
+
+    return precision, recall, f1
+
 s_time = time.time()
 X, Y = load_test_data()
 csv_report = []
-for i in range(1, 13824 + 1):
-    precision, recall, f1 = run_prediction(X,Y, i)
+for i in range(1, 2 + 1):
+    precision, recall, f1 = run_inference_lite(X,Y, i)
     csv_report.append([i, precision, recall, f1])
     logger.info("DONE ::: " + str(i))
 
