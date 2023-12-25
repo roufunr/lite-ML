@@ -8,11 +8,12 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn import metrics
 import time
 import logging
+import sys
 
 
 logging.basicConfig(level=logging.INFO,  
                     format='%(asctime)s - %(levelname)s - %(message)s',
-                    filename='infer.log',  # Specify the log file
+                    filename='/home/rouf-linux/lite-ML/infer.log',  # Specify the log file
                     filemode='a') 
 
 logger = logging.getLogger(__name__)
@@ -26,7 +27,7 @@ def load_json_to_dict(json_path):
     return json_data
 
 def load_test_data():
-    device_mapper = load_json_to_dict("device_mapper.json")
+    device_mapper = load_json_to_dict("/home/rouf-linux/lite-ML/device_mapper.json")
     test_sample_idx = [x for x in range(16, 21)]
     X = []
     Y = []
@@ -47,7 +48,7 @@ def load_test_data():
     return X, Y
 
 def run_prediction(X, Y, model_idx):
-    tf_model = tf.keras.models.load_model("models/tf/" + str(model_idx))
+    tf_model = tf.keras.models.load_model("/home/rouf-linux/lite-ML/models/tf/" + str(model_idx))
     predictions = tf_model.predict(X)
 
     one_hot_predictions = []
@@ -71,43 +72,63 @@ def run_prediction(X, Y, model_idx):
     return precision, recall, f1
 
 def run_inference_lite(X, Y, model_idx):
-    interpreter = tf.lite.Interpreter(model_path="models/lite/" + str(model_idx) + ".tflite")
+    interpreter = tf.lite.Interpreter(model_path="/home/rouf-linux/lite-ML/models/lite/" + str(model_idx) + ".tflite")
     interpreter.allocate_tensors()
     input_tensor_index = interpreter.get_input_details()[0]['index']
-    interpreter.set_tensor(input_tensor_index, np.array([X[0]]).astype(np.float32))  # Ensure input data is FLOAT32
-    interpreter.invoke()
-    output_tensor_index = interpreter.get_output_details()[0]['index']
-    predictions = interpreter.get_tensor(output_tensor_index)
-    one_hot_predictions = np.zeros_like(predictions)
-    one_hot_predictions[np.arange(len(predictions)), np.argmax(predictions, axis=1)] = 1
+    predictions = np.array([])
+    for i in range(len(Y)):
+        interpreter.set_tensor(input_tensor_index, np.array([X[i]]).astype(np.float32))  # Ensure input data is FLOAT32
+        interpreter.invoke()
+        output_tensor_index = interpreter.get_output_details()[0]['index']
+        prediction = interpreter.get_tensor(output_tensor_index)
+        if predictions.size == 0:
+            predictions = np.array([prediction[0]])
+        else:
+            # If 'a' is not empty, use numpy.vstack to stack the new row
+            predictions = np.vstack((predictions, prediction[0]))
+    
+    print(predictions.shape)
+    one_hot_predictions = []
+    for prediction in predictions:
+        one_hot_prediction = np.zeros_like(prediction)
+        one_hot_prediction[np.argmax(prediction)] = 1
+        one_hot_predictions.append(one_hot_prediction.tolist())
+    one_hot_predictions = np.array(one_hot_predictions)
 
-    accuracy = metrics.accuracy_score(Y, one_hot_predictions)
-    print(f'Model {model_idx} Accuracy: {accuracy}')
+    predicted_labels = one_hot_predictions
 
-    precision = metrics.precision_score(Y, one_hot_predictions, average='weighted')
-    recall = metrics.recall_score(Y, one_hot_predictions, average='weighted')
-    f1 = metrics.f1_score(Y, one_hot_predictions, average='weighted')
+    # Accuracy
+    accuracy = metrics.accuracy_score(Y, predicted_labels)
+    print(f'Accuracy: {accuracy}')
+
+    # Precision, Recall, F1-score (for each class in a multi-class setting)
+    precision = metrics.precision_score(Y, predicted_labels, average='micro')  # Change average to 'micro', 'macro', or 'weighted' for multi-class
+    recall = metrics.recall_score(Y, predicted_labels, average='micro')
+    f1 = metrics.f1_score(Y, predicted_labels, average='micro')
 
     return precision, recall, f1
 
 s_time = time.time()
 X, Y = load_test_data()
 csv_report = []
-for i in range(1, 2 + 1):
-    precision, recall, f1 = run_inference_lite(X,Y, i)
-    csv_report.append([i, precision, recall, f1])
+start_model = int(sys.argv[1])
+end_model = int(sys.argv[2])
+for i in range(start_model, end_model + 1):
+    precision_tf, recall_tf, f1_tf = run_prediction(X,Y, i)
+    precision_lite, recall_lite, f1_lite = run_inference_lite(X,Y, i)
+    csv_report.append([i, precision_tf, precision_lite, recall_tf, recall_lite, f1_tf, f1_lite])
     logger.info("DONE ::: " + str(i))
 
-file_path = 'precision.csv'
+file_path = 'metric.csv'
 
 # Writing the 2D list to a CSV file
-with open(file_path, 'w', newline='') as csvfile:
+with open(file_path, 'a', newline='') as csvfile:
     csv_writer = csv.writer(csvfile)
     csv_writer.writerows(csv_report)
 
 print(f"Data has been written to {file_path}")
 e_time = time.time()
-print((e_time - s_time))
+logger.info(str(start_model) + " to " + str(end_model) + " takes " + str(e_time - s_time) + " seconds")
 
     
 
