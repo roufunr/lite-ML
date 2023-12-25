@@ -4,7 +4,7 @@ import subprocess
 import time
 
 def run_model_generation(param1, param2):
-    command = ["python", "model_generation.py", str(param1), str(param2)]
+    command = ["python", "train_models.py", str(param1), str(param2)]
     subprocess.run(command)
 
 if __name__ == "__main__":
