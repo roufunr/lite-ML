@@ -156,8 +156,10 @@ def train_models(data, fromIdx, offset):
 start_time = time.time()     
 data = load_data()
 # Get command-line arguments
-fromIdx = int(sys.argv[1])
-offset = int(sys.argv[2])
+# fromIdx = int(sys.argv[1])
+# offset = int(sys.argv[2])
+fromIdx = 9699
+offset = 2
 train_models(data, fromIdx, offset)
 end_time = time.time()
 
