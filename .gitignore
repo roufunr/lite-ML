@@ -2,3 +2,4 @@ venv/*
 models/*
 models_21st/*
 nohup.out
+*.log
