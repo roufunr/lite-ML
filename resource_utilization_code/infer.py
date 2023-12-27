@@ -43,7 +43,7 @@ class NilsimsaClassifier:
             self.training_data[device] = zero_similarity
 
 
-    @profile
+    # @profile
     def predict(self, test_data_point):
         results = []
         for test_point in test_data_point:
@@ -193,6 +193,7 @@ def generate_inference_time():
     inferece_metrics = measure_inference_time(classifier, X_test)
     write_metrics_to_csv(inferece_metrics, 'inference_metrics.csv')
     print("Inference Metrics written to 'inference_metrics.csv'")
+
 
 # main_predict(classifier, X_test)
 # def run_predict():
