@@ -1,0 +1,13 @@
+   Ordered by: standard name
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.082    0.082 <string>:1(<module>)
+        1    0.000    0.000    0.082    0.082 infer.py:198(run_predict)
+        1    0.073    0.073    0.082    0.082 infer.py:47(predict)
+      125    0.000    0.000    0.000    0.000 {built-in method builtins.bin}
+        1    0.000    0.000    0.082    0.082 {built-in method builtins.exec}
+   205250    0.009    0.000    0.009    0.000 {built-in method builtins.len}
+      125    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+      125    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}
+      125    0.000    0.000    0.000    0.000 {method 'zfill' of 'str' objects}

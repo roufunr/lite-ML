@@ -1,0 +1,27 @@
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    45                                               @profile
+    46                                               def predict(self, test_data_point):
+    47         1          1.0      1.0      0.0          results = []
+    48       126         37.9      0.3      0.0          for test_point in test_data_point:
+    49                                                      
+    50       125         19.6      0.2      0.0              max_label = "none"
+    51       125         56.8      0.5      0.0              max_score = -sys.maxsize
+    52                                           
+    53       125        296.3      2.4      0.1              test_digest = bin(int(test_point, 16))[2:].zfill(256)
+    54                                           
+    55      3250        744.8      0.2      0.2              for label, training_zero_similarity in self.training_data.items():
+    56      3125        403.8      0.1      0.1                  cum_score = 0
+    57    803125     108055.8      0.1     27.4                  for i in range(256):
+    58    800000     130840.2      0.2     33.2                      if test_digest[i] == '0':
+    59    594750     103465.0      0.2     26.3                          cum_score += training_zero_similarity[i]
+    60                                                               else:
+    61    205250      49335.9      0.2     12.5                          cum_score += (len(training_zero_similarity) - training_zero_similarity[i])
+    62                                                           
+    63      3125        478.1      0.2      0.1                  if cum_score > max_score:
+    64       385         52.4      0.1      0.0                      max_score = cum_score
+    65       385         48.4      0.1      0.0                      max_label = label
+    66                                           
+    67       125         75.2      0.6      0.0              results.append(max_label)
+    68                                           
+    69         1          0.5      0.5      0.0          return results

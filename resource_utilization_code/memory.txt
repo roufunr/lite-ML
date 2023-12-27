@@ -1,0 +1,27 @@
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    45   18.801 MiB   18.801 MiB           1       @profile
+    46                                             def predict(self, test_data_point):
+    47   18.801 MiB    0.000 MiB           1           results = []
+    48   18.801 MiB    0.000 MiB         126           for test_point in test_data_point:
+    49                                                    
+    50   18.801 MiB    0.000 MiB         125               max_label = "none"
+    51   18.801 MiB    0.000 MiB         125               max_score = -sys.maxsize
+    52                                         
+    53   18.801 MiB    0.000 MiB         125               test_digest = bin(int(test_point, 16))[2:].zfill(256)
+    54                                         
+    55   18.801 MiB    0.000 MiB        3250               for label, training_zero_similarity in self.training_data.items():
+    56   18.801 MiB    0.000 MiB        3125                   cum_score = 0
+    57   18.801 MiB    0.000 MiB      803125                   for i in range(256):
+    58   18.801 MiB    0.000 MiB      800000                       if test_digest[i] == '0':
+    59   18.801 MiB    0.000 MiB      594750                           cum_score += training_zero_similarity[i]
+    60                                                             else:
+    61   18.801 MiB    0.000 MiB      205250                           cum_score += (len(training_zero_similarity) - training_zero_similarity[i])
+    62                                                         
+    63   18.801 MiB    0.000 MiB        3125                   if cum_score > max_score:
+    64   18.801 MiB    0.000 MiB         385                       max_score = cum_score
+    65   18.801 MiB    0.000 MiB         385                       max_label = label
+    66                                         
+    67   18.801 MiB    0.000 MiB         125               results.append(max_label)
+    68                                         
+    69   18.801 MiB    0.000 MiB           1           return results
