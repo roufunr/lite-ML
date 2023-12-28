@@ -61,6 +61,13 @@ def kurtosis(data):
     n = len(data)
     return (sum((x - data_mean) ** 4 for x in data) / n) / (data_variance ** 2) - 3
 
+def write_metrics_to_csv(metrics, file_name):
+    with open(file_name, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['Metric', 'Value'])
+        for key, value in metrics.items():
+            writer.writerow([key, value])
+
 def load_json_to_dict(json_path):
     with open(json_path, 'r') as file:
         json_data = json.load(file)
@@ -166,14 +173,19 @@ def measure_inference_time_on_lite_model(X, Y, interpreter):
     }
     return metrics
 
-model_idx = sys.argv[1]    
-X, Y = load_data()
-download_model(model_idx)
-tf_model = tf.keras.models.load_model(home_path + "/lite-ML/downloaded_models/model_"+ str(model_idx) +"/tf")
-lite_model = tf.lite.Interpreter(model_path= home_path + "/lite-ML/downloaded_models/model_"+ str(model_idx) +"/" +str(model_idx)+ ".tflite")
-measure_inference_time_on_tf_model(X, Y, tf_model)
-measure_inference_time_on_lite_model(X, Y, lite_model)
-delete_model(model_idx)
+# model_idx = sys.argv[1]    
+
+for i in range(1, 100 + 1):
+    model_idx = i
+    X, Y = load_data()
+    download_model(model_idx)
+    tf_model = tf.keras.models.load_model(home_path + "/lite-ML/downloaded_models/model_"+ str(model_idx) +"/tf")
+    lite_model = tf.lite.Interpreter(model_path= home_path + "/lite-ML/downloaded_models/model_"+ str(model_idx) +"/" +str(model_idx)+ ".tflite")
+    tf_time = measure_inference_time_on_tf_model(X, Y, tf_model)
+    lite_time = measure_inference_time_on_lite_model(X, Y, lite_model)
+    delete_model(model_idx)
+    write_metrics_to_csv(tf_time, f"{home_path}/lite-ML/inference/inference_time/tf/{model_idx}.csv")
+    write_metrics_to_csv(lite_time, f"{home_path}/lite-ML/inference/inference_time/lite/{model_idx}.csv")
 
 
 
