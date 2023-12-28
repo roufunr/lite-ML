@@ -47,10 +47,10 @@ def generate_result_dir(model_idx):
 
 for i in range(1, 2):
     start_time = time.time()
-    command1 = f'python inference_time.py {i}'
+    command1 = f'python3 inference_time.py {i}'
     command2 = f'kernprof -l -v line_and_memory_profile.py {i} > {home_path}/resource_utilization/{i}/line.txt'
     command3 = f'python3 -m memory_profiler line_and_memory_profile.py {i} > {home_path}/resource_utilization/{i}/memory.txt'
-    command4 = f'python -m cProfile -s cumulative cumulative_profile.py {i} > {home_path}/resource_utilization/{i}/cpu.txt'
+    command4 = f'python3 -m cProfile -s cumulative cumulative_profile.py {i} > {home_path}/resource_utilization/{i}/cpu.txt'
 
     commands = [command1, command2, command3, command4]
     generate_result_dir(i)
