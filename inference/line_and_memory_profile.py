@@ -76,7 +76,7 @@ def load_json_to_dict(json_path):
 
 def load_data():
     device_mapper = load_json_to_dict(home_path + "/lite-ML/device_mapper.json")
-    test_sample_idx = [x for x in range(1, 20 + 1)]     # for testing accuracy change range from 16 to 20 + 1
+    test_sample_idx = [x for x in range(16, 20 + 1)]     # for testing accuracy change range from 16 to 20 + 1
     X = []
     Y = []
     for device_id in device_mapper:

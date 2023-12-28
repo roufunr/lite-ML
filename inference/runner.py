@@ -46,6 +46,7 @@ def generate_result_dir(model_idx):
     os.makedirs(home_path + "/downloaded_models", exist_ok=True)
 
 for i in range(1, 2):
+    start_time = time.time()
     command1 = f'python inference_time.py {i}'
     command2 = f'kernprof -l -v line_and_memory_profile.py {i} > {home_path}/resource_utilization/{i}/line.txt'
     command3 = f'python3 -m memory_profiler line_and_memory_profile.py {i} > {home_path}/resource_utilization/{i}/memory.txt'
@@ -63,4 +64,6 @@ for i in range(1, 2):
     delete_model(i)
     if i % 64 == 0: 
         time.sleep(5)
+    end_time = time.time()
+    logger.info(f"model-{i} takes {end_time - start_time} seconds")
 
