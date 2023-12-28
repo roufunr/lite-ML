@@ -11,6 +11,7 @@ import logging
 import sys
 import requests
 import zipfile
+import shutil
 
 home_path = os.path.expanduser('~')
 root_path = os.path.abspath('./')
@@ -107,6 +108,10 @@ def download_model(model_idx):
     else:
         logger.info(f"Failed to download model {model_idx}. Server response: {response.status_code} - {response.reason}")
 
+def delete_model(model_idx):
+    os.remove(f"{home_path}/lite-ML/downloaded_models/model_{model_idx}.zip")
+    shutil.rmtree(f"{home_path}/lite-ML/downloaded_models/model_{model_idx}")
+
 
 def measure_inference_time_on_tf_model(X, Y, tf_model):
     total_data_points = len(Y)
@@ -168,7 +173,7 @@ tf_model = tf.keras.models.load_model(home_path + "/lite-ML/downloaded_models/mo
 lite_model = tf.lite.Interpreter(model_path= home_path + "/lite-ML/downloaded_models/model_"+ str(model_idx) +"/" +str(model_idx)+ ".tflite")
 measure_inference_time_on_tf_model(X, Y, tf_model)
 measure_inference_time_on_lite_model(X, Y, lite_model)
-
+delete_model(model_idx)
 
 
 # def run_inference_on_tf_model(X, Y, tf_model):
