@@ -4,8 +4,8 @@ import csv
 import pandas
 import numpy as np
 import tensorflow as tf
-from sklearn.preprocessing import MinMaxScaler
-from sklearn import metrics
+# from sklearn.preprocessing import MinMaxScaler
+# from sklearn import metrics
 import time
 import logging
 import sys
@@ -83,8 +83,8 @@ def load_data():
             Y.append(y)
     X = np.array(X)
     Y = np.array(Y)
-    scaler = MinMaxScaler()
-    X = scaler.fit_transform(X)
+    # scaler = MinMaxScaler()
+    # X = scaler.fit_transform(X)
     logger.info("Loaded data shape X:" + str(X.shape) + " Y:" + str(Y.shape))
     return X, Y
 
@@ -165,15 +165,17 @@ def measure_inference_time_on_lite_model(X, Y, interpreter):
         "kurtosis": kurtosis(inference_times)
     }
     return metrics
-    
+
+model_idx = sys.argv[1]    
 X, Y = load_data()
-model_idx = sys.argv[1]
 download_model(model_idx)
 tf_model = tf.keras.models.load_model(home_path + "/lite-ML/downloaded_models/model_"+ str(model_idx) +"/tf")
 lite_model = tf.lite.Interpreter(model_path= home_path + "/lite-ML/downloaded_models/model_"+ str(model_idx) +"/" +str(model_idx)+ ".tflite")
 measure_inference_time_on_tf_model(X, Y, tf_model)
 measure_inference_time_on_lite_model(X, Y, lite_model)
 delete_model(model_idx)
+
+
 
 
 # def run_inference_on_tf_model(X, Y, tf_model):
