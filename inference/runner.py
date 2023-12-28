@@ -45,7 +45,7 @@ def generate_result_dir(model_idx):
     os.makedirs(home_path + "/resource_utilization/" + str(model_idx), exist_ok = True)  
     os.makedirs(home_path + "/downloaded_models", exist_ok=True)
 
-for i in range(1, 2):
+for i in range(1, 13824 + 1):
     start_time = time.time()
     command1 = f'python3 inference_time.py {i}'
     command2 = f'kernprof -l -v line_and_memory_profile.py {i} > {home_path}/resource_utilization/{i}/line.txt'
@@ -62,8 +62,8 @@ for i in range(1, 2):
         except subprocess.CalledProcessError as e:
             print(f"Command '{cmd}' failed with error: {e}")
     delete_model(i)
-    if i % 64 == 0: 
-        time.sleep(5)
+    if i % 16 == 0: 
+        time.sleep(2)
     end_time = time.time()
     logger.info(f"model-{i} takes {end_time - start_time} seconds")
 
