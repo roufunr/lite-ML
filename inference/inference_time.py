@@ -8,18 +8,19 @@ import tensorflow as tf
 # from sklearn import metrics
 import time
 import logging
-import sys
 import requests
 import zipfile
 import shutil
+import sys
 
 home_path = os.path.expanduser('~')
 root_path = os.path.abspath('./')
 
 
+
 logging.basicConfig(level=logging.INFO,  
                     format='%(asctime)s - %(levelname)s - %(message)s',
-                    filename= root_path + '/logger/infer_'+ str(round(time.time())) +'.log',
+                    filename= home_path + '/logger/it.log',
                     filemode='a')
 
 logger = logging.getLogger(__name__)
@@ -75,7 +76,7 @@ def load_json_to_dict(json_path):
 
 def load_data():
     device_mapper = load_json_to_dict(home_path + "/lite-ML/device_mapper.json")
-    test_sample_idx = [x for x in range(1, 20 + 1)]     # for testing accuracy change range from 16 to 20 + 1
+    test_sample_idx = [x for x in range(16, 20 + 1)]     # for testing accuracy change range from 16 to 20 + 1
     X = []
     Y = []
     for device_id in device_mapper:
@@ -94,30 +95,6 @@ def load_data():
     # X = scaler.fit_transform(X)
     logger.info("Loaded data shape X:" + str(X.shape) + " Y:" + str(Y.shape))
     return X, Y
-
-def download_model(model_idx):
-    SERVER_IP = '192.168.1.188'
-    PORT = 8000
-    url = f"http://{SERVER_IP}:{PORT}?model_idx={model_idx}"
-    response = requests.get(url)
-    if response.status_code == 200:
-        save_dir = f"{home_path}/lite-ML/downloaded_models"
-        os.makedirs(save_dir, exist_ok=True)
-        save_path = os.path.join(save_dir, f"model_{model_idx}.zip")
-        with open(save_path, 'wb') as file:
-            file.write(response.content)
-        logger.info(f"Model {model_idx} downloaded and saved to {save_path}")
-        logger.info(f"Size of downloaded file: {os.path.getsize(save_path)} bytes")
-        extract_path = f"{home_path}/lite-ML/downloaded_models/model_{model_idx}"
-        with zipfile.ZipFile(save_path, 'r') as zip_ref:
-            zip_ref.extractall(extract_path)
-        logger.info(f"Model {model_idx} unzipped to {extract_path}")
-    else:
-        logger.info(f"Failed to download model {model_idx}. Server response: {response.status_code} - {response.reason}")
-
-def delete_model(model_idx):
-    os.remove(f"{home_path}/lite-ML/downloaded_models/model_{model_idx}.zip")
-    shutil.rmtree(f"{home_path}/lite-ML/downloaded_models/model_{model_idx}")
 
 
 def measure_inference_time_on_tf_model(X, Y, tf_model):
@@ -173,19 +150,18 @@ def measure_inference_time_on_lite_model(X, Y, interpreter):
     }
     return metrics
 
-# model_idx = sys.argv[1]    
+model_idx = sys.argv[1]
 
-for i in range(1, 100 + 1):
-    model_idx = i
+def run_exp():
     X, Y = load_data()
-    download_model(model_idx)
-    tf_model = tf.keras.models.load_model(home_path + "/lite-ML/downloaded_models/model_"+ str(model_idx) +"/tf")
-    lite_model = tf.lite.Interpreter(model_path= home_path + "/lite-ML/downloaded_models/model_"+ str(model_idx) +"/" +str(model_idx)+ ".tflite")
+    tf_model = tf.keras.models.load_model(home_path + "/downloaded_models/model_"+ str(model_idx) +"/tf")
+    lite_model = tf.lite.Interpreter(model_path= home_path + "/downloaded_models/model_"+ str(model_idx) +"/" +str(model_idx)+ ".tflite")
     tf_time = measure_inference_time_on_tf_model(X, Y, tf_model)
     lite_time = measure_inference_time_on_lite_model(X, Y, lite_model)
-    delete_model(model_idx)
-    write_metrics_to_csv(tf_time, f"{home_path}/lite-ML/inference/inference_time/tf/{model_idx}.csv")
-    write_metrics_to_csv(lite_time, f"{home_path}/lite-ML/inference/inference_time/lite/{model_idx}.csv")
+    write_metrics_to_csv(tf_time, home_path + "/resource_utilization/" + model_idx + "/tf_time.csv" )
+    write_metrics_to_csv(lite_time, home_path + "/resource_utilization/" + model_idx + "/lite_time.csv")
+
+run_exp()
 
 
 

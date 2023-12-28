@@ -196,9 +196,9 @@ def generate_inference_time():
 
 
 # main_predict(classifier, X_test)
-# def run_predict():
-#     classifier.predict(X_test)
+def run_predict():
+    classifier.predict(X_test)
 
-# cProfile.run('run_predict()')
+cProfile.run('run_predict()')
 
 # generate_inference_time()
