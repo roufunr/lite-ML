@@ -4,15 +4,9 @@ import csv
 import pandas
 import numpy as np
 import tensorflow as tf
-# from sklearn.preprocessing import MinMaxScaler
-# from sklearn import metrics
-import time
 import logging
-import requests
-import zipfile
-import shutil
 import sys
-import cProfile
+
 
 home_path = os.path.expanduser('~')
 root_path = os.path.abspath('./')

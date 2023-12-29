@@ -4,19 +4,12 @@ import csv
 import pandas
 import numpy as np
 import tensorflow as tf
-# from sklearn.preprocessing import MinMaxScaler
-# from sklearn import metrics
 import time
 import logging
-import requests
-import zipfile
-import shutil
 import sys
 
 home_path = os.path.expanduser('~')
 root_path = os.path.abspath('./')
-
-
 
 logging.basicConfig(level=logging.INFO,  
                     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -24,7 +17,6 @@ logging.basicConfig(level=logging.INFO,
                     filemode='a')
 
 logger = logging.getLogger(__name__)
-
 
 dataset_path = home_path + '/TensorflowLiteData/F/'
 
@@ -163,94 +155,5 @@ def run_exp():
     write_metrics_to_csv(lite_time, home_path + "/resource_utilization/" + model_idx + "/lite_time.csv")
 
 run_exp()
-
-
-
-
-# def run_inference_on_tf_model(X, Y, tf_model):
-#     predictions = np.array([])
-#     total_data_points = len(Y)
-#     for i in range(total_data_points):
-#         prediction = tf_model.predict(np.array([X[i]]))
-#         if predictions.size == 0:
-#             predictions = np.array([prediction[0]])
-#         else:
-#             predictions = np.vstack((predictions, prediction[0]))
-
-#     one_hot_predictions = []
-#     for prediction in predictions:
-#         one_hot_prediction = np.zeros_like(prediction)
-#         one_hot_prediction[np.argmax(prediction)] = 1
-#         one_hot_predictions.append(one_hot_prediction.tolist())
-#     one_hot_predictions = np.array(one_hot_predictions)
-
-#     predicted_labels = one_hot_predictions
-
-#     # Accuracy
-#     accuracy = metrics.accuracy_score(Y, predicted_labels)
-#     print(f'Accuracy: {accuracy}')
-
-#     # Precision, Recall, F1-score (for each class in a multi-class setting)
-#     precision = metrics.precision_score(Y, predicted_labels, average='weighted')  # Change average to 'micro', 'macro', or 'weighted' for multi-class
-#     recall = metrics.recall_score(Y, predicted_labels, average='weighted')
-#     f1 = metrics.f1_score(Y, predicted_labels, average='weighted')
-
-#     return precision, recall, f1
-
-# def run_inference_on_lite_model(X, Y, interpreter):
-#     interpreter.allocate_tensors()
-#     input_tensor_index = interpreter.get_input_details()[0]['index']
-#     predictions = np.array([])
-#     for i in range(len(Y)):
-#         interpreter.set_tensor(input_tensor_index, np.array([X[i]]).astype(np.float32))  # Ensure input data is FLOAT32
-#         interpreter.invoke()
-#         output_tensor_index = interpreter.get_output_details()[0]['index']
-#         prediction = interpreter.get_tensor(output_tensor_index)
-#         if predictions.size == 0:
-#             predictions = np.array([prediction[0]])
-#         else:
-#             predictions = np.vstack((predictions, prediction[0]))
-    
-#     one_hot_predictions = []
-#     for prediction in predictions:
-#         one_hot_prediction = np.zeros_like(prediction)
-#         one_hot_prediction[np.argmax(prediction)] = 1
-#         one_hot_predictions.append(one_hot_prediction.tolist())
-#     one_hot_predictions = np.array(one_hot_predictions)
-
-#     predicted_labels = one_hot_predictions
-
-
-#     accuracy = metrics.accuracy_score(Y, predicted_labels)
-#     print(f'Accuracy: {accuracy}')
-
-#     precision = metrics.precision_score(Y, predicted_labels, average='micro')  # Change average to 'micro', 'macro', or 'weighted' for multi-class
-#     recall = metrics.recall_score(Y, predicted_labels, average='micro')
-#     f1 = metrics.f1_score(Y, predicted_labels, average='micro')
-
-#     return precision, recall, f1
-
-# s_time = time.time()
-# X, Y = load_test_data()
-# csv_report = []
-# start_model = int(sys.argv[1])
-# end_model = int(sys.argv[2])
-# for i in range(start_model, end_model + 1):
-#     precision_tf, recall_tf, f1_tf = run_prediction(X,Y, i)
-#     precision_lite, recall_lite, f1_lite = run_inference_lite(X,Y, i)
-#     csv_report.append([i, precision_tf, precision_lite, recall_tf, recall_lite, f1_tf, f1_lite])
-#     logger.info("DONE ::: " + str(i))
-
-# file_path = 'metric.csv'
-
-# # Writing the 2D list to a CSV file
-# with open(file_path, 'a', newline='') as csvfile:
-#     csv_writer = csv.writer(csvfile)
-#     csv_writer.writerows(csv_report)
-
-# print(f"Data has been written to {file_path}")
-# e_time = time.time()
-# logger.info(str(start_model) + " to " + str(end_model) + " takes " + str(e_time - s_time) + " seconds")
-
     
 
