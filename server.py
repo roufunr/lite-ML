@@ -44,12 +44,13 @@ class ModelRequestHandler(http.server.SimpleHTTPRequestHandler):
                     zip_file_path = os.path.join(temp_dir, f'model.zip')
                     shutil.make_archive(zip_file_path[:-4], 'zip', temp_dir + "/model")
 
-                    print(zip_file_path)
+                    logger.info(f"model -> {model_idx} is serving")
                     with open(zip_file_path, 'rb') as zip_file:
                         self.send_response(200)
                         self.send_header('Content-type', 'application/zip')
                         self.end_headers()
                         self.wfile.write(zip_file.read())
+                    logger.info(f"model -> {model_idx} is serving DONE")
             else:
                 self.send_response(404)
                 self.end_headers()
