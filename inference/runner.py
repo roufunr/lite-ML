@@ -45,7 +45,7 @@ def generate_result_dir(model_idx):
     os.makedirs(home_path + "/resource_utilization/" + str(model_idx), exist_ok = True)  
     os.makedirs(home_path + "/downloaded_models", exist_ok=True)
 
-for i in range(1, 13824 + 1):
+for i in range(1154, 13824 + 1):
     start_time = time.time()
     command1 = f'python3 inference_time.py {i}'
     command2 = f'kernprof -l -v line_and_memory_profile.py {i} > {home_path}/resource_utilization/{i}/line.txt'
@@ -53,12 +53,16 @@ for i in range(1, 13824 + 1):
     command4 = f'python3 -m cProfile -s cumulative cumulative_profile.py {i} > {home_path}/resource_utilization/{i}/cpu.txt'
 
     commands = [command1, command2, command3, command4]
+    logging.info(f"Downloading {i} th model")
     generate_result_dir(i)
     download_model(i)
+    logging.info(f"Downloading {i} th model ---  DONE")
     for cmd in commands:
         try:
+            print(f"{cmd} --- STARTED")
             subprocess.run(cmd, shell=True, check=True)
             logger.info(f"{cmd} --- DONE")
+            print(f"{cmd} --- END")
         except subprocess.CalledProcessError as e:
             print(f"Command '{cmd}' failed with error: {e}")
     delete_model(i)
