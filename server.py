@@ -3,10 +3,19 @@ import socketserver
 import os
 import shutil
 import tempfile
+import logging
 
-# Define the directory containing the models
 MODELS_DIR = 'models'
 
+home_path = os.path.expanduser('~')
+root_path = os.path.abspath('./')
+os.makedirs(home_path + '/logger', exist_ok=True)
+logging.basicConfig(level=logging.INFO,  
+                    format='%(asctime)s - %(levelname)s - %(message)s',
+                    filename= home_path + '/logger/server.log',
+                    filemode='a')
+
+logger = logging.getLogger(__name__)
 
 class ModelRequestHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
@@ -25,14 +34,15 @@ class ModelRequestHandler(http.server.SimpleHTTPRequestHandler):
             if os.path.exists(tf_model_path) and os.path.exists(lite_model_path):
                
                 with tempfile.TemporaryDirectory() as temp_dir:
-                    tf_temp_path = os.path.join(temp_dir, 'tf')
-                    lite_temp_path = os.path.join(temp_dir, model_idx + ".tflite")
+                    os.makedirs(temp_dir + "/model")
+                    tf_temp_path = os.path.join(temp_dir + "/model", 'tf')
+                    lite_temp_path = os.path.join(temp_dir + "/model", model_idx + ".tflite")
                     
                     shutil.copytree(tf_model_path, tf_temp_path)
                     shutil.copy2(lite_model_path, lite_temp_path)
 
-                    zip_file_path = os.path.join(temp_dir, f'model_{model_idx}.zip')
-                    shutil.make_archive(zip_file_path[:-4], 'zip', temp_dir)
+                    zip_file_path = os.path.join(temp_dir, f'model.zip')
+                    shutil.make_archive(zip_file_path[:-4], 'zip', temp_dir + "/model")
 
                     print(zip_file_path)
                     with open(zip_file_path, 'rb') as zip_file:
@@ -54,5 +64,5 @@ PORT = 8000
 Handler = ModelRequestHandler
 
 with socketserver.TCPServer(("", PORT), Handler) as httpd:
-    print(f"Server running on port {PORT}")
+    logger.info(f"Server running on port {PORT}")
     httpd.serve_forever()

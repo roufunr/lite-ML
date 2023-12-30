@@ -44,15 +44,17 @@ def delete_model(model_idx):
 def generate_result_dir(model_idx):
     os.makedirs(home_path + "/resource_utilization/" + str(model_idx), exist_ok = True)  
     os.makedirs(home_path + "/downloaded_models", exist_ok=True)
+    logger.info("folder generation done!")
 
-for i in range(1154, 13824 + 1):
+for i in range(1155, 1155 + 1):
     start_time = time.time()
     command1 = f'python3 inference_time.py {i}'
-    command2 = f'kernprof -l -v line_and_memory_profile.py {i} > {home_path}/resource_utilization/{i}/line.txt'
-    command3 = f'python3 -m memory_profiler line_and_memory_profile.py {i} > {home_path}/resource_utilization/{i}/memory.txt'
-    command4 = f'python3 -m cProfile -s cumulative cumulative_profile.py {i} > {home_path}/resource_utilization/{i}/cpu.txt'
+    # command2 = f'kernprof -l -v line_and_memory_profile.py {i} > {home_path}/resource_utilization/{i}/line.txt'
+    # command3 = f'python3 -m memory_profiler line_and_memory_profile.py {i} > {home_path}/resource_utilization/{i}/memory.txt'
+    # command4 = f'python3 -m cProfile -s cumulative cumulative_profile.py {i} > {home_path}/resource_utilization/{i}/cpu.txt'
+    command5 = f'python3 profiler.py {i} > {home_path}/resource_utilization/{i}/profiling.txt'
 
-    commands = [command1, command2, command3, command4]
+    commands = [command1, command5]
     logging.info(f"Downloading {i} th model")
     generate_result_dir(i)
     download_model(i)

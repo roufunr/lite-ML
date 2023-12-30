@@ -1,26 +1,26 @@
-import json
+import sys
+from memory_profiler import profile as memory_profile
+import cProfile
+from line_profiler import LineProfiler
 import os
-import csv
 import pandas
 import numpy as np
 import tensorflow as tf
 import logging
 import sys
 
-
 home_path = os.path.expanduser('~')
 root_path = os.path.abspath('./')
-
-
+dataset_path = home_path + '/TensorflowLiteData/F/'
 logging.basicConfig(level=logging.INFO,  
                     format='%(asctime)s - %(levelname)s - %(message)s',
-                    filename= home_path + '/logger/cp.log',
+                    filename= home_path + '/logger/profiler.log',
                     filemode='a')
-
 logger = logging.getLogger(__name__)
 
-dataset_path = home_path + '/TensorflowLiteData/F/'
-
+model_idx = sys.argv[1]
+tf_model = tf.keras.models.load_model(home_path + "/downloaded_models/model_"+ str(model_idx) +"/tf")
+interpreter = tf.lite.Interpreter(model_path= home_path + "/downloaded_models/model_"+ str(model_idx) +"/" +str(model_idx)+ ".tflite")
 def load_data():
     # device_mapper = load_json_to_dict(home_path + "/lite-ML/device_mapper.json")
     device_mapper = {"1": 0}
@@ -43,14 +43,21 @@ def load_data():
     # X = scaler.fit_transform(X)
     logger.info("Loaded data shape X:" + str(X.shape) + " Y:" + str(Y.shape))
     return X, Y
+X, Y = load_data()
 
-def measure_cp_on_tf_model(X, Y, tf_model):
+
+
+def profile_line(func, *args, **kwargs):
+    profiler = LineProfiler()
+    profiler.add_function(func)
+    profiler.runcall(func, *args, **kwargs)
+    profiler.print_stats()
+def measure_on_tf_model():
     total_data_points = len(Y)
     for i in range(total_data_points):
         tf_model.predict(np.array([X[i]]))
-    
-         
-def measure_cp_on_lite_model(X, Y, interpreter):
+  
+def measure_on_lite_model():
     interpreter.allocate_tensors()
     input_tensor_index = interpreter.get_input_details()[0]['index']
     total_data_points = len(Y)
@@ -58,12 +65,36 @@ def measure_cp_on_lite_model(X, Y, interpreter):
         interpreter.set_tensor(input_tensor_index, np.array([X[i]]).astype(np.float32))
         interpreter.invoke()
 
-model_idx = sys.argv[1]
 
-def run_exp():
-    X, Y = load_data()
-    tf_model = tf.keras.models.load_model(home_path + "/downloaded_models/model_"+ str(model_idx) +"/tf")
-    lite_model = tf.lite.Interpreter(model_path= home_path + "/downloaded_models/model_"+ str(model_idx) +"/" +str(model_idx)+ ".tflite")
-    measure_cp_on_tf_model(X, Y, tf_model)
-    measure_cp_on_lite_model(X, Y, lite_model)
-run_exp()
+def main():
+    profile_line(measure_on_tf_model)
+    profile_line(measure_on_lite_model)
+
+    with cProfile.Profile() as pr:
+        measure_on_tf_model()
+    pr.print_stats('cumulative')
+    
+    with cProfile.Profile() as pr:
+        measure_on_lite_model()
+    pr.print_stats('cumulative')
+
+main()
+
+@memory_profile
+def measure_memory_on_tf_model():
+    total_data_points = len(Y)
+    for i in range(total_data_points):
+        tf_model.predict(np.array([X[i]]))
+
+@memory_profile
+def measure_memory_on_lite_model():
+    interpreter.allocate_tensors()
+    input_tensor_index = interpreter.get_input_details()[0]['index']
+    total_data_points = len(Y)
+    for i in range(total_data_points):
+        interpreter.set_tensor(input_tensor_index, np.array([X[i]]).astype(np.float32))
+        interpreter.invoke()
+
+measure_memory_on_tf_model()
+measure_memory_on_lite_model()
+
