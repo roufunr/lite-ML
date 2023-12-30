@@ -53,9 +53,9 @@ def generate_result_dir(model_idx):
 for i in range(1, 13824 + 1):
     
     start_time = time.time()
-    command1 = f'python3 inference_time.py {i}'
+    # command1 = f'python3 inference_time.py {i}'
     command5 = f'python3 profiler.py {i} > {home_path}/resource_utilization/{i}/profiling.txt'
-    commands = [command1, command5]
+    commands = [command5]
     logging.info(f"Downloading {i} th model")
     generate_result_dir(i)
     download_model(i)
