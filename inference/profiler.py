@@ -45,6 +45,7 @@ def load_data():
     # X = scaler.fit_transform(X)
     logger.info("Loaded data shape X:" + str(X.shape) + " Y:" + str(Y.shape))
     return X, Y
+
 X, Y = load_data()
 
 def profile_line(func, *args, **kwargs):
