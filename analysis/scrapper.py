@@ -96,7 +96,7 @@ for i in range(1, 13825):
     rows.append(row)
     logger.info(f"{i} --> DONE")
 
-write_2d_list_to_csv(rows, home_path.split("/")[1] + "_" + "data.csv")
+write_2d_list_to_csv(rows, home_path.split("/")[2] + "_" + "data.csv")
 
 
     
