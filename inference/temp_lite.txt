@@ -1,0 +1,16 @@
+Filename: /home/rouf-linux/lite-ML/inference/lite_mem_profiler.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    37    439.8 MiB    439.8 MiB           1   @memory_profile
+    38                                         def measure_memory_on_lite_model():
+    39    442.0 MiB      2.2 MiB           1       interpreter = tf.lite.Interpreter(model_path= f"{home_path}/lite-ML/models/lite/{model_idx}.tflite")
+    40    442.5 MiB      0.5 MiB           1       interpreter.allocate_tensors()
+    41    442.5 MiB      0.0 MiB           1       input_tensor_index = interpreter.get_input_details()[0]['index']
+    42    443.4 MiB      0.9 MiB           1       X, Y = load_data()
+    43    443.4 MiB      0.0 MiB           1       total_data_points = 5
+    44    443.6 MiB      0.0 MiB           6       for i in range(total_data_points):
+    45    443.6 MiB      0.0 MiB           5           interpreter.set_tensor(input_tensor_index, np.array([X[i]]).astype(np.float32))
+    46    443.6 MiB      0.2 MiB           5           interpreter.invoke()
+
+
