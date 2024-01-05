@@ -12,7 +12,7 @@ logging.basicConfig(level=logging.INFO,
                     filemode='a')
 
 logger = logging.getLogger(__name__)
-  
+
 for i in range(1, 13824 + 1):
     start_time = time.time()
     os.makedirs(f"{home_path}/mem_utilization/", exist_ok=True)
