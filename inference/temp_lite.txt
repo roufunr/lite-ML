@@ -12,5 +12,3 @@ Line #    Mem usage    Increment  Occurrences   Line Contents
     44    443.6 MiB      0.0 MiB           6       for i in range(total_data_points):
     45    443.6 MiB      0.0 MiB           5           interpreter.set_tensor(input_tensor_index, np.array([X[i]]).astype(np.float32))
     46    443.6 MiB      0.2 MiB           5           interpreter.invoke()
-
-
