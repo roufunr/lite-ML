@@ -7,13 +7,16 @@ import tensorflow as tf
 import time
 import logging
 import sys
+import zipfile
+import shutil
+import requests
 
 home_path = os.path.expanduser('~')
 root_path = os.path.abspath('./')
 
 logging.basicConfig(level=logging.INFO,  
                     format='%(asctime)s - %(levelname)s - %(message)s',
-                    filename= home_path + '/logger/it.log',
+                    filename= home_path + '/logger/time.log',
                     filemode='a')
 
 logger = logging.getLogger(__name__)
@@ -143,16 +146,46 @@ def measure_inference_time_on_lite_model(X, Y, interpreter):
     }
     return metrics
 
-model_idx = sys.argv[1]
+# model_idx = sys.argv[1]
+
+def download_model(model_idx):
+    SERVER_IP = '192.168.1.188'
+    PORT = 8000
+    url = f"http://{SERVER_IP}:{PORT}?model_idx={model_idx}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        save_dir = f"{home_path}/downloaded_models"
+        os.makedirs(save_dir, exist_ok=True)
+        save_path = os.path.join(save_dir, f"model_{model_idx}.zip")
+        with open(save_path, 'wb') as file:
+            file.write(response.content)
+        logger.info(f"Model {model_idx} downloaded and saved to {save_path}")
+        logger.info(f"Size of downloaded file: {os.path.getsize(save_path)} bytes")
+        extract_path = f"{home_path}/downloaded_models/model_{model_idx}"
+        with zipfile.ZipFile(save_path, 'r') as zip_ref:
+            zip_ref.extractall(extract_path)
+        logger.info(f"Model {model_idx} unzipped to {extract_path}")
+    else:
+        logger.info(f"Failed to download model {model_idx}. Server response: {response.status_code} - {response.reason}")
+
+def delete_model(model_idx):
+    os.remove(f"{home_path}/downloaded_models/model_{model_idx}.zip")
+    shutil.rmtree(f"{home_path}/downloaded_models/model_{model_idx}")
+
 
 def run_exp():
+    
     X, Y = load_data()
-    tf_model = tf.keras.models.load_model(home_path + "/downloaded_models/model_"+ str(model_idx) +"/tf")
-    lite_model = tf.lite.Interpreter(model_path= home_path + "/downloaded_models/model_"+ str(model_idx) +"/" +str(model_idx)+ ".tflite")
-    tf_time = measure_inference_time_on_tf_model(X, Y, tf_model)
-    lite_time = measure_inference_time_on_lite_model(X, Y, lite_model)
-    write_metrics_to_csv(tf_time, home_path + "/resource_utilization/" + model_idx + "/tf_time.csv" )
-    write_metrics_to_csv(lite_time, home_path + "/resource_utilization/" + model_idx + "/lite_time.csv")
+    for i in range(1, 3 + 1):
+        download_model(i)
+        model_idx = str(i)
+        tf_model = tf.keras.models.load_model(home_path + "/downloaded_models/model_"+ str(model_idx) +"/tf")
+        lite_model = tf.lite.Interpreter(model_path= home_path + "/downloaded_models/model_"+ str(model_idx) +"/" +str(model_idx)+ ".tflite")
+        tf_time = measure_inference_time_on_tf_model(X, Y, tf_model)
+        lite_time = measure_inference_time_on_lite_model(X, Y, lite_model)
+        os.makedirs(home_path + "/inference_time/" + model_idx, exist_ok=True)
+        write_metrics_to_csv(tf_time, home_path + "/inference_time/" + model_idx + "/tf_time.csv" )
+        write_metrics_to_csv(lite_time, home_path + "/inference_time/" + model_idx + "/lite_time.csv")
 
 run_exp()
     
