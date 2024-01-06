@@ -177,7 +177,7 @@ def run_exp():
     
     X, Y = load_data()
     s_time = time.time()
-    for i in range(1, 256 + 1):
+    for i in range(1, 32 + 1):
         download_model(i)
         model_idx = str(i)
         tf_model = tf.keras.models.load_model(home_path + "/downloaded_models/model_"+ str(model_idx) +"/tf")
