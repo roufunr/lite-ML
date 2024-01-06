@@ -176,7 +176,8 @@ def delete_model(model_idx):
 def run_exp():
     
     X, Y = load_data()
-    for i in range(1, 3 + 1):
+    s_time = time.time()
+    for i in range(1, 256 + 1):
         download_model(i)
         model_idx = str(i)
         tf_model = tf.keras.models.load_model(home_path + "/downloaded_models/model_"+ str(model_idx) +"/tf")
@@ -186,6 +187,8 @@ def run_exp():
         os.makedirs(home_path + "/inference_time/" + model_idx, exist_ok=True)
         write_metrics_to_csv(tf_time, home_path + "/inference_time/" + model_idx + "/tf_time.csv" )
         write_metrics_to_csv(lite_time, home_path + "/inference_time/" + model_idx + "/lite_time.csv")
+    e_time = time.time()
+    logger.info(f"total time taken: {e_time - s_time} s")
 
 run_exp()
     
