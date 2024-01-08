@@ -37,6 +37,7 @@ def parse_memory_profile(i):
         lite_total_mem
     ]
     return data
+
 def write_2d_list_to_csv(data_2d, file_path):
     try:
         with open(file_path, 'w', newline='') as file:
