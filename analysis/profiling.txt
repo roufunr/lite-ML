@@ -1,0 +1,34 @@
+1/1 [==============================] - ETA: 0s1/1 [==============================] - 1s 1s/step
+1/1 [==============================] - ETA: 0s1/1 [==============================] - 0s 107ms/step
+1/1 [==============================] - ETA: 0s1/1 [==============================] - 0s 107ms/step
+1/1 [==============================] - ETA: 0s1/1 [==============================] - 0s 107ms/step
+1/1 [==============================] - ETA: 0s1/1 [==============================] - 0s 107ms/step
+Timer unit: 1e-09 s
+
+Total time: 3.14529 s
+File: profiler.py
+Function: measure_on_tf_model at line 56
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    56                                           def measure_on_tf_model():
+    57         1       6510.0   6510.0      0.0      total_data_points = len(Y)
+    58         6      34843.0   5807.2      0.0      for i in range(total_data_points):
+    59         5 3145252506.0    6e+08    100.0          tf_model.predict(np.array([X[i]]))
+
+Timer unit: 1e-09 s
+
+Total time: 0.0136223 s
+File: profiler.py
+Function: measure_on_lite_model at line 61
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    61                                           def measure_on_lite_model():
+    62         1    9017803.0    9e+06     66.2      interpreter.allocate_tensors()
+    63         1     270260.0 270260.0      2.0      input_tensor_index = interpreter.get_input_details()[0]['index']
+    64         1       6510.0   6510.0      0.0      total_data_points = len(Y)
+    65         6      45418.0   7569.7      0.3      for i in range(total_data_points):
+    66         5     913697.0 182739.4      6.7          interpreter.set_tensor(input_tensor_index, np.array([X[i]]).astype(np.float32))
+    67         5    3368643.0 673728.6     24.7          interpreter.invoke()
+

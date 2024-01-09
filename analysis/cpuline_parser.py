@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 def parse_profile(i):
     profiler_file = f'{home_path}/resource_utilization/{i}/profiling.txt'
+    # profiler_file = f'{home_path}/lite-ML/analysis/profiling.txt'
     with open(profiler_file, 'r') as file:
         profiler_lines = file.readlines()
     
@@ -51,8 +52,8 @@ def write_2d_list_to_csv(data_2d, file_path):
         logger.info(f"Error occurred while writing to the file: {e}")
 
 rows = [['model_idx', 'tf_cpu_line', 'lite_cpu_lite']]
-for i in range(1, 13824 + 1):
+for i in range(1, 1 + 1):
     tf, lite = parse_profile(i)
     print(i)
     rows.append([i, tf, lite])
-write_2d_list_to_csv(rows, "orin_cpu.csv")
+write_2d_list_to_csv(rows, "pi_cpu.csv")
