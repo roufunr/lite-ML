@@ -33,20 +33,12 @@ def write_2d_list_to_csv(data_2d, file_path):
         
 rows = [['model_idx', 'tf_time', 'lite_time']]
 for i in range(1, 13825):
-    # file_path = home_path + f"/resource_utilization/{i}/profiling.txt"
-    # profiling_data = extract_profiling_data(file_path)
     tf_inference_time = get_median_from_csv(home_path + f"/resource_utilization/{i}/tf_time.csv")
     lite_inference_time = get_median_from_csv(home_path + f"/resource_utilization/{i}/lite_time.csv")
     row = [
         i, 
         tf_inference_time, 
-        lite_inference_time, 
-        # profiling_data['tf']['line'],
-        # profiling_data['lite']['line'],
-        # profiling_data['tf']['cum'],
-        # profiling_data['lite']['cum'],
-        # profiling_data['tf']['mem'],
-        # profiling_data['lite']['mem']
+        lite_inference_time
     ]
     rows.append(row)
     logger.info(f"{i} --> DONE")
