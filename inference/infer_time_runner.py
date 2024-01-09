@@ -17,7 +17,6 @@ logger = logging.getLogger(__name__)
 
  
 for i in range(1, 13824, 128):
-    
     start_time = time.time()
     # command1 = f'python3 inference_time.py {i}'
     command5 = f'python inference_time.py {i} {i + 127}'
@@ -38,4 +37,3 @@ for i in range(1, 13824, 128):
     
     end_time = time.time()
     logger.info(f"from model-{i} to model-{i + 127} takes {end_time - start_time} seconds")
-
