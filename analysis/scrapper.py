@@ -33,8 +33,8 @@ def write_2d_list_to_csv(data_2d, file_path):
         
 rows = [['model_idx', 'tf_time', 'lite_time']]
 for i in range(1, 13825):
-    tf_inference_time = get_median_from_csv(home_path + f"/resource_utilization/{i}/tf_time.csv")
-    lite_inference_time = get_median_from_csv(home_path + f"/resource_utilization/{i}/lite_time.csv")
+    tf_inference_time = get_median_from_csv(home_path + f"/inference_time/{i}/tf_time.csv")
+    lite_inference_time = get_median_from_csv(home_path + f"/inference_time/{i}/lite_time.csv")
     row = [
         i, 
         tf_inference_time, 
