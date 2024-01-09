@@ -55,5 +55,4 @@ for i in range(1, 13824 + 1):
     tf, lite = parse_profile(i)
     print(i)
     rows.append([i, tf, lite])
-write_2d_list_to_csv(rows, "pc_cpu.csv")
-
+write_2d_list_to_csv(rows, "orin_cpu.csv")
