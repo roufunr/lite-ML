@@ -52,8 +52,8 @@ def write_2d_list_to_csv(data_2d, file_path):
         logger.info(f"Error occurred while writing to the file: {e}")
 
 rows = [['model_idx', 'tf_cpu_line', 'lite_cpu_lite']]
-for i in range(1, 1 + 1):
+for i in range(1, 13824 + 1):
     tf, lite = parse_profile(i)
-    print(i)
+    logger.info("{i} --> done")
     rows.append([i, tf, lite])
 write_2d_list_to_csv(rows, "pi_cpu.csv")
