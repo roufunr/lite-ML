@@ -44,21 +44,21 @@ for i in range(1, 13824 + 1):
     start_time = time.time()
     download_model(i)
     os.makedirs(f"{home_path}/mem_utilization/", exist_ok=True)
-    command4 = f'python3 lite_mem_profiler.py {i} > {home_path}/mem_utilization/{i}_lite.txt'
-    command5 = f'python3 tf_mem_profiler.py {i} > {home_path}/mem_utilization/{i}_tf.txt'
+    command4 = f'python lite_mem_profiler.py {i} > {home_path}/mem_utilization/{i}_lite.txt'
+    command5 = f'python tf_mem_profiler.py {i} > {home_path}/mem_utilization/{i}_tf.txt'
     commands = [command4, command5]
     for cmd in commands:
         try:
-            print(f"{cmd} --- STARTED")
+            proc_start_time = time.time()
             subprocess.run(cmd, shell=True, check=True)
-            logger.info(f"{cmd} --- DONE")
-            print(f"{cmd} --- END")
+            proc_end_time = time.time()
+            logger.info(f"{cmd} takes {proc_end_time - proc_start_time} seconds")
         except subprocess.CalledProcessError as e:
             print(f"Command '{cmd}' failed with error: {e}")
     end_time = time.time()
     logger.info(f"model-{i} takes {end_time - start_time} seconds")
     
-    if i % 256 == 0: 
+    if i % 128 == 0: 
         time.sleep(10)
     
     delete_model(i)
