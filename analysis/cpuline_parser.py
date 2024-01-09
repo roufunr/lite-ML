@@ -17,10 +17,27 @@ def parse_profile(i):
     with open(profiler_file, 'r') as file:
         profiler_lines = file.readlines()
     
+    tf_cpu_line_text = profiler_lines[26].split(" ")
+    tf_cpu_line_text = [x for x in tf_cpu_line_text if x != '']
     
-    tf_cpu_lines = (float(profiler_lines[26].split(" ")[15]))/5
+    lite_allocate_tensor_text = profiler_lines[37].split(" ")
+    lite_allocate_tensor_text = [x for x in lite_allocate_tensor_text if x != '']
     
-    lite_cpu_lines = float(profiler_lines[38].split(" ")[19]) + float(profiler_lines[38].split(" ")[19]) + float(profiler_lines[41].split(" ")[22]) + float(profiler_lines[42].split(" ")[22])
+    lite_get_input_tensor_text = profiler_lines[38].split(" ")
+    lite_get_input_tensor_text = [x for x in lite_get_input_tensor_text if x != '']
+    
+    lite_set_input_data_text = profiler_lines[41].split(" ")
+    lite_set_input_data_text = [x for x in lite_set_input_data_text if x != '']
+    
+    lite_invoke_text = profiler_lines[42].split(" ")
+    lite_invoke_text = [x for x in lite_invoke_text if x != '']
+    
+    tf_cpu_lines = float(tf_cpu_line_text[2])/5
+    
+    lite_cpu_lines = float(lite_allocate_tensor_text[2]) 
+    + float(lite_get_input_tensor_text[2]) 
+    + (float(lite_set_input_data_text[2])/5) 
+    + (float(lite_invoke_text[2])/5)
     
     return tf_cpu_lines, lite_cpu_lines
 
@@ -34,8 +51,9 @@ def write_2d_list_to_csv(data_2d, file_path):
         logger.info(f"Error occurred while writing to the file: {e}")
 
 rows = [['model_idx', 'tf_cpu_line', 'lite_cpu_lite']]
-for i in range(1, 1 + 1):
+for i in range(1, 13824 + 1):
     tf, lite = parse_profile(i)
+    print(i)
     rows.append([i, tf, lite])
 write_2d_list_to_csv(rows, "pc_cpu.csv")
 
