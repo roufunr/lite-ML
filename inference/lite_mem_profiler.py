@@ -36,7 +36,7 @@ def load_data():
 
 @memory_profile
 def measure_memory_on_lite_model():
-    interpreter = tf.lite.Interpreter(model_path= f"{home_path}/lite-ML/models/lite/{model_idx}.tflite")
+    interpreter = tf.lite.Interpreter(model_path= home_path + "/downloaded_models/model_"+ str(model_idx) +"/" +str(model_idx)+ ".tflite")
     interpreter.allocate_tensors()
     input_tensor_index = interpreter.get_input_details()[0]['index']
     X, Y = load_data()

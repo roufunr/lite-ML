@@ -36,7 +36,7 @@ def load_data():
 
 @memory_profile
 def measure_memory_on_tf_model():
-    tf_model = tf.keras.models.load_model(f"{home_path}/lite-ML/models/tf/{model_idx}")
+    tf_model = tf.keras.models.load_model(home_path + "/downloaded_models/model_"+ str(model_idx) +"/tf")
     X, Y = load_data()
     total_data_points = 5
     result = []
