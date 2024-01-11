@@ -2,7 +2,6 @@ import subprocess
 import os
 import sys
 from memory_profiler import profile as memory_profile
-from memory_profiler import profile as memory_usage
 home_path = os.path.expanduser('~')
 data_path = f"{home_path}/network_data"
 
