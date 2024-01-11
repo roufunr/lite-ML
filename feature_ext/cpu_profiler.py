@@ -1,6 +1,18 @@
 import subprocess
-import time
-import csv
+import logging
+import os
+import sys
+from line_profiler import LineProfiler
+
+home_path = os.path.expanduser('~')
+data_path = f"{home_path}/network_data"
+
+logging.basicConfig(level=logging.INFO,  
+                    format='%(asctime)s - %(levelname)s - %(message)s',
+                    filename= home_path + '/logger/cp.log',
+                    filemode='a')
+
+logger = logging.getLogger(__name__)
 
 def get_feature_packet_no_by_filter(file_path, filter, max_packet_analyze):
     try:
@@ -147,7 +159,6 @@ def get_dst_port_class(file, max_packet_analyze):
 
 def get_packet_size_matrix(file, max_packet_analyze):
     try:
-        
         tshark_command = ['tshark', '-r', file, '-T', 'fields', '-e', 'frame.len']
       
         result = subprocess.run(tshark_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, check=True)
@@ -162,7 +173,6 @@ def get_packet_size_matrix(file, max_packet_analyze):
 row_header = ["arp", "llc", "ip", "icmp", "icmpv6", "eapol", "tcp", "udp", "http", "https", "dhcp", "bootp", "ssdp", "dns", "mdns", "ntp", "padding", "router_alert", "size", "raw_data", "destination_ip_counter", "source", "destination"]
 
 def get_feature_matrix(file, max_packet_analyze):
-    # ARP
     arp_matrix = get_protocol_in_packets(file=file, max_packet_analyze=max_packet_analyze, protocol='arp')
     llc_matrix = get_protocol_in_packets(file=file, max_packet_analyze=max_packet_analyze, protocol='llc')
     ip_matrix = get_protocol_in_packets(file=file, max_packet_analyze=max_packet_analyze, protocol='ip')
@@ -186,8 +196,6 @@ def get_feature_matrix(file, max_packet_analyze):
     destination_ip_count = get_destination_ip_count(file=file, max_packet_analyze=max_packet_analyze)
     src_port_class = get_src_port_class(file=file, max_packet_analyze=max_packet_analyze)
     dst_port_class = get_dst_port_class(file=file, max_packet_analyze=max_packet_analyze)
-
-     
 
     return [
         arp_matrix,
@@ -215,36 +223,17 @@ def get_feature_matrix(file, max_packet_analyze):
         dst_port_class
     ]
 
+pcap_filename = sys.argv[1]
 
+def generate_feature_matrix():
+    pcap_filepath = f"{data_path}/{pcap_filename}"
+    feature_matrix = get_feature_matrix(pcap_filepath, 12)
+    return feature_matrix
 
+def profile_line(func, *args, **kwargs):
+    profiler = LineProfiler()
+    profiler.add_function(func)
+    profiler.runcall(func, *args, **kwargs)
+    profiler.print_stats()
 
-smallest_file = "dataset/IPMAC-10-7.pcap"
-largest_file = "dataset/IPMAC-18-10.pcap"
-
-
-print("Smallest file:")
-for i in range(1, 10):
-    start = time.time()
-    get_feature_matrix(smallest_file, 12)
-    end = time.time()
-    
-    # write to csv file
-    header = ["index", "time"]
-    data = [i, end-start]
-    with open('time_for_smallest.csv', 'a') as f:
-        writer = csv.writer(f)
-        writer.writerow(data)
-
-
-print("Largest file:")
-for i in range(1, 10):
-    start = time.time()
-    get_feature_matrix(largest_file, 12)
-    end = time.time()
-
-    # write to csv file
-    header = ["index", "time"]
-    data = [i, end-start]
-    with open('time_for_largest.csv', 'a') as f:
-        writer = csv.writer(f)
-        writer.writerow(data)
+profile_line(generate_feature_matrix)
