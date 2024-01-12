@@ -40,7 +40,7 @@ def delete_model(model_idx):
     os.remove(f"{home_path}/downloaded_models/model_{model_idx}.zip")
     shutil.rmtree(f"{home_path}/downloaded_models/model_{model_idx}")
 
-for i in range(7180, 10500 + 1):
+for i in range(10501, 13824 + 1):
     start_time = time.time()
     download_model(i)
     os.makedirs(f"{home_path}/mem_utilization/", exist_ok=True)
