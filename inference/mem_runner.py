@@ -40,12 +40,12 @@ def delete_model(model_idx):
     os.remove(f"{home_path}/downloaded_models/model_{model_idx}.zip")
     shutil.rmtree(f"{home_path}/downloaded_models/model_{model_idx}")
 
-for i in range(10501, 13824 + 1):
+for i in range(5209, 13824 + 1):
     start_time = time.time()
     download_model(i)
     os.makedirs(f"{home_path}/mem_utilization/", exist_ok=True)
-    command4 = f'python lite_mem_profiler.py {i} > {home_path}/mem_utilization/{i}_lite.txt'
-    command5 = f'python tf_mem_profiler.py {i} > {home_path}/mem_utilization/{i}_tf.txt'
+    command4 = f'python3 lite_mem_profiler.py {i} > {home_path}/mem_utilization/{i}_lite.txt'
+    command5 = f'python3 tf_mem_profiler.py {i} > {home_path}/mem_utilization/{i}_tf.txt'
     commands = [command4, command5]
     for cmd in commands:
         try:
