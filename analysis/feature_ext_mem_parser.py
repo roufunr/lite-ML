@@ -14,30 +14,45 @@ logging.basicConfig(level=logging.INFO,
 
 logger = logging.getLogger(__name__)
 
-def parse_cpu_profile(i, j):
-    pc = f'{data_path}/pc/{i}_{j}_cpu.txt'
-    orin = f'{data_path}/orin/{i}_{j}_cpu.txt'
-    pi = f'{data_path}/pi/{i}_{j}_cpu.txt'
+def parse_mem_profile(i, j):
+    pc = f'{data_path}/pc/{i}_{j}_mem.txt'
+    orin = f'{data_path}/orin/{i}_{j}_mem.txt'
+    pi = f'{data_path}/pi/{i}_{j}_mem.txt'
     
     with open(pc, 'r') as file:
-        pc_lines = file.readlines()
+        pc_mem = file.readlines()
     
     with open(orin, 'r') as file:
-        orin_lines = file.readlines()
+        orin_mem = file.readlines()
     
     with open(pi, 'r') as file:
-        pi_lines = file.readlines()
+        pi_mem = file.readlines()
         
-    pc_lines_text = pc_lines[10].split(" ")
-    pc_lines_text = [x for x in pc_lines_text if x != '']
+    pc_mem_text = pc_mem[8].split(" ")
+    pc_mem_text = [x for x in pc_mem_text if x != '']
+    pc_mem_inc_text = pc_mem[7].split(" ")
+    pc_mem_inc_text = [x for x in pc_mem_inc_text if x != '']
     
-    orin_lines_text = orin_lines[10].split(" ")
-    orin_lines_text = [x for x in orin_lines_text if x != '']
+    orin_mem_text = orin_mem[8].split(" ")
+    orin_mem_text = [x for x in orin_mem_text if x != '']
+    orin_mem_inc_text = orin_mem[7].split(" ")
+    orin_mem_inc_text = [x for x in orin_mem_inc_text if x != '']
     
-    pi_lines_text = pi_lines[10].split(" ")
-    pi_lines_text = [x for x in pi_lines_text if x != '']
+    pi_mem_text = pi_mem[8].split(" ")
+    pi_mem_text = [x for x in pi_mem_text if x != '']
+    pi_mem_inc_text = pi_mem[7].split(" ")
+    pi_mem_inc_text = [x for x in pi_mem_inc_text if x != '']
     
-    return (float(pc_lines_text[2]), float(orin_lines_text[2]), float(pi_lines_text[2]))
+    return (
+        float(pc_mem_text[1]),
+        float(orin_mem_text[1]),
+        float(pi_mem_text[1]),
+        float(pc_mem_inc_text[3]),
+        float(orin_mem_inc_text[3]),
+        float(pi_mem_inc_text[3])
+    )
+    
+    
 
 def write_2d_list_to_csv(data_2d, file_path):
     try:
@@ -48,7 +63,7 @@ def write_2d_list_to_csv(data_2d, file_path):
     except Exception as e:
         logger.info(f"Error occurred while writing to the file: {e}")
 
-rows = [['idx', 'device', 'sample', 'cpu_line (pc)', 'cpu_line (orin)', 'cpu_line (pi)']]
+rows = [['idx', 'device', 'sample', 'total_mem (pc)', 'total_mem (orin)', 'total_mem (pi)', 'mem_increment (pc)', 'mem_increment (orin)', 'mem_increment (pi)']]
 
 
 def get_device_sample_map():
@@ -69,12 +84,14 @@ def get_device_sample_map():
 
 device_sample_map = get_device_sample_map()
 
+# print(parse_mem_profile(1, 1))
+
 i = 1
 for device in range(1, 32):
     for sample in device_sample_map[device]:
-        pc, orin, pi = parse_cpu_profile(device, sample)
-        row = [i, device, sample, pc, orin, pi]
+        pc, orin, pi, pc_i, orin_i, pi_i = parse_mem_profile(device, sample)
+        row = [i, device, sample, pc, orin, pi, pc_i, orin_i, pi_i]
         rows.append(row)
         i += 1
 
-write_2d_list_to_csv(rows, "feature_ext_cpuline.csv")
+write_2d_list_to_csv(rows, "feature_ext_mem.csv")
