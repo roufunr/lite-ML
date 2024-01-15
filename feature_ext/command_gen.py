@@ -1,0 +1,26 @@
+commands = [['tshark', '-r', '/home/rouf-linux/network_data/IPMAC-18-10.pcap', '-Y', 'arp', '-c', '12', '-T', 'fields', '-e', 'frame.number'],
+['tshark', '-r', '/home/rouf-linux/network_data/IPMAC-18-10.pcap', '-Y', 'llc', '-c', '12', '-T', 'fields', '-e', 'frame.number'],
+['tshark', '-r', '/home/rouf-linux/network_data/IPMAC-18-10.pcap', '-Y', 'ip', '-c', '12', '-T', 'fields', '-e', 'frame.number'],
+['tshark', '-r', '/home/rouf-linux/network_data/IPMAC-18-10.pcap', '-Y', 'icmp', '-c', '12', '-T', 'fields', '-e', 'frame.number'],
+['tshark', '-r', '/home/rouf-linux/network_data/IPMAC-18-10.pcap', '-Y', 'icmpv6', '-c', '12', '-T', 'fields', '-e', 'frame.number'],
+['tshark', '-r', '/home/rouf-linux/network_data/IPMAC-18-10.pcap', '-Y', 'eapol', '-c', '12', '-T', 'fields', '-e', 'frame.number'],
+['tshark', '-r', '/home/rouf-linux/network_data/IPMAC-18-10.pcap', '-Y', 'tcp', '-c', '12', '-T', 'fields', '-e', 'frame.number'],
+['tshark', '-r', '/home/rouf-linux/network_data/IPMAC-18-10.pcap', '-Y', 'udp', '-c', '12', '-T', 'fields', '-e', 'frame.number'],
+['tshark', '-r', '/home/rouf-linux/network_data/IPMAC-18-10.pcap', '-Y', 'http', '-c', '12', '-T', 'fields', '-e', 'frame.number'],
+['tshark', '-r', '/home/rouf-linux/network_data/IPMAC-18-10.pcap', '-Y', 'ssl', '-c', '12', '-T', 'fields', '-e', 'frame.number'],
+['tshark', '-r', '/home/rouf-linux/network_data/IPMAC-18-10.pcap', '-Y', 'udp.port eq 67 or udp.port eq 68', '-c', '12', '-T', 'fields', '-e', 'frame.number'],
+['tshark', '-r', '/home/rouf-linux/network_data/IPMAC-18-10.pcap', '-Y', 'bootp', '-c', '12', '-T', 'fields', '-e', 'frame.number'],
+['tshark', '-r', '/home/rouf-linux/network_data/IPMAC-18-10.pcap', '-Y', 'udp.port eq 1900', '-c', '12', '-T', 'fields', '-e', 'frame.number'],
+['tshark', '-r', '/home/rouf-linux/network_data/IPMAC-18-10.pcap', '-Y', 'dns', '-c', '12', '-T', 'fields', '-e', 'frame.number'],
+['tshark', '-r', '/home/rouf-linux/network_data/IPMAC-18-10.pcap', '-Y', 'dns and udp.port eq 5353', '-c', '12', '-T', 'fields', '-e', 'frame.number'],
+['tshark', '-r', '/home/rouf-linux/network_data/IPMAC-18-10.pcap', '-Y', 'ntp', '-c', '12', '-T', 'fields', '-e', 'frame.number'],
+['tshark', '-r', '/home/rouf-linux/network_data/IPMAC-18-10.pcap', '-Y', 'ip.opt.padding', '-c', '12', '-T', 'fields', '-e', 'frame.number'],
+['tshark', '-r', '/home/rouf-linux/network_data/IPMAC-18-10.pcap', '-Y', 'ip.opt.ra', '-c', '12', '-T', 'fields', '-e', 'frame.number'],
+['tshark', '-r', '/home/rouf-linux/network_data/IPMAC-18-10.pcap', '-T', 'fields', '-e', 'frame.len'],
+['tshark', '-r', '/home/rouf-linux/network_data/IPMAC-18-10.pcap', '-c', '12', '-T', 'fields', '-e', 'data'],
+['tshark', '-r', '/home/rouf-linux/network_data/IPMAC-18-10.pcap', '-c', '12', '-T', 'fields', '-e', 'ip.dst'],
+['tshark', '-r', '/home/rouf-linux/network_data/IPMAC-18-10.pcap', '-c', '12', '-T', 'fields', '-e', 'tcp.srcport', '-e', 'udp.srcport'],
+['tshark', '-r', '/home/rouf-linux/network_data/IPMAC-18-10.pcap', '-c', '12', '-T', 'fields', '-e', 'tcp.dstport', '-e', 'udp.dstport']]
+
+for cmd in commands:
+    print(" ".join(cmd))
