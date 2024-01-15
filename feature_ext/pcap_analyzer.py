@@ -115,8 +115,8 @@ def pcap_to_matrix(packets):
                         port_class = 0
                     # destination port class
                     matrix[idx][22] = port_class
-    except:
-        print("exception")
+    except Exception as e:
+        print(f"An error occurred: {e}")
     return matrix
     
 def chop_down_pcap(pcap_file_path):
@@ -140,6 +140,7 @@ def generate_matrix(pcap_file_path):
     first_12_packets = pyshark.FileCapture("temp.pcap")
     mat = pcap_to_matrix(first_12_packets)
     delete_temp_pcap()
+    first_12_packets.clear()
     return mat
 
 # filepath = f"{home_path}/network_data/IPMAC-1-1.pcap"
