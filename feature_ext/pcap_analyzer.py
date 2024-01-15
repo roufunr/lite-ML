@@ -163,7 +163,7 @@ for i in range(1, 10):
     # write to csv file
     header = ["index", "time"]
     data = [i, end-start]
-    with open('time_for_smallest_orin.csv', 'a') as f:
+    with open('time_for_smallest_pi.csv', 'a') as f:
         writer = csv.writer(f)
         writer.writerow(data)
 
@@ -177,6 +177,6 @@ for i in range(1, 10):
     # write to csv file
     header = ["index", "time"]
     data = [i, end-start]
-    with open('time_for_largest_orin.csv', 'a') as f:
+    with open('time_for_largest_pi.csv', 'a') as f:
         writer = csv.writer(f)
         writer.writerow(data)
