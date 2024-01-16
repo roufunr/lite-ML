@@ -23,8 +23,8 @@ for filename in files:
     pieces = filename.split("-")
     device_id = pieces[1]
     sample_id = pieces[2].split(".")[0]
-    command1 = f'python3 opt_cpu_profiler.py {filename} > {home_path}/feature_ext_profiler_result_new/{device_id}_{sample_id}_cpu.txt'
-    command2 = f'python3 opt_mem_profiler.py {filename} > {home_path}/feature_ext_profiler_result_new/{device_id}_{sample_id}_mem.txt'
+    command1 = f'python opt_cpu_profiler.py {filename} > {home_path}/feature_ext_profiler_result_new/{device_id}_{sample_id}_cpu.txt'
+    command2 = f'python opt_mem_profiler.py {filename} > {home_path}/feature_ext_profiler_result_new/{device_id}_{sample_id}_mem.txt'
     commands = [command1, command2]
     for cmd in commands:
         try:
