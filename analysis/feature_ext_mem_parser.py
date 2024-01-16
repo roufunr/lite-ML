@@ -4,7 +4,7 @@ import csv
 
 home_path = os.path.expanduser('~')
 root_path = os.path.abspath('./')
-data_path = f"{home_path}/feature_ext_profiler_result"
+data_path = f"{home_path}/feature_ext_profiler_result_new"
 
 os.makedirs(home_path + "/" + "logger", exist_ok=True)
 logging.basicConfig(level=logging.INFO,  
@@ -27,20 +27,23 @@ def parse_mem_profile(i, j):
     
     with open(pi, 'r') as file:
         pi_mem = file.readlines()
-        
-    pc_mem_text = pc_mem[8].split(" ")
+    
+    total_memory_line_idx = 9 if pc_mem[0] == "1\n" else 8
+    memory_inc_line_idx = 8 if pc_mem[0] == "1\n" else 7
+     
+    pc_mem_text = pc_mem[total_memory_line_idx].split(" ")
     pc_mem_text = [x for x in pc_mem_text if x != '']
-    pc_mem_inc_text = pc_mem[7].split(" ")
+    pc_mem_inc_text = pc_mem[memory_inc_line_idx].split(" ")
     pc_mem_inc_text = [x for x in pc_mem_inc_text if x != '']
     
-    orin_mem_text = orin_mem[8].split(" ")
+    orin_mem_text = orin_mem[total_memory_line_idx].split(" ")
     orin_mem_text = [x for x in orin_mem_text if x != '']
-    orin_mem_inc_text = orin_mem[7].split(" ")
+    orin_mem_inc_text = orin_mem[memory_inc_line_idx].split(" ")
     orin_mem_inc_text = [x for x in orin_mem_inc_text if x != '']
     
-    pi_mem_text = pi_mem[8].split(" ")
+    pi_mem_text = pi_mem[total_memory_line_idx].split(" ")
     pi_mem_text = [x for x in pi_mem_text if x != '']
-    pi_mem_inc_text = pi_mem[7].split(" ")
+    pi_mem_inc_text = pi_mem[memory_inc_line_idx].split(" ")
     pi_mem_inc_text = [x for x in pi_mem_inc_text if x != '']
     
     return (
@@ -93,5 +96,9 @@ for device in range(1, 32):
         row = [i, device, sample, pc, orin, pi, pc_i, orin_i, pi_i]
         rows.append(row)
         i += 1
+        print([i, device, sample, pc, orin, pi, pc_i, orin_i, pi_i])
 
-write_2d_list_to_csv(rows, "feature_ext_mem.csv")
+write_2d_list_to_csv(rows, "new_feature_ext_mem.csv")
+
+# pc, orin, pi, pc_i, orin_i, pi_i = parse_mem_profile(22, 3)
+# print(pc, orin, pi, pc_i, orin_i, pi_i)

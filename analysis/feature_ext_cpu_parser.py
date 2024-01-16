@@ -28,13 +28,13 @@ def parse_cpu_profile(i, j):
     with open(pi, 'r') as file:
         pi_lines = file.readlines()
         
-    pc_lines_text = pc_lines[10].split(" ")
+    pc_lines_text = pc_lines[13].split(" ")
     pc_lines_text = [x for x in pc_lines_text if x != '']
     
-    orin_lines_text = orin_lines[10].split(" ")
+    orin_lines_text = orin_lines[13].split(" ")
     orin_lines_text = [x for x in orin_lines_text if x != '']
     
-    pi_lines_text = pi_lines[10].split(" ")
+    pi_lines_text = pi_lines[13].split(" ")
     pi_lines_text = [x for x in pi_lines_text if x != '']
     
     return (float(pc_lines_text[2]), float(orin_lines_text[2]), float(pi_lines_text[2]))

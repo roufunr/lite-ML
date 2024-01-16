@@ -13,8 +13,8 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger(__name__)
 
 def parse_memory_profile(i):
-    tf = f'{home_path}/mem_utilization/{i}_tf.txt'
-    lite = f'{home_path}/mem_utilization/{i}_lite.txt'
+    tf = f'{home_path}/mem_utilization/pi/{i}_tf.txt'
+    lite = f'{home_path}/mem_utilization/pi/{i}_lite.txt'
     with open(tf, 'r') as file:
         tf_lines = file.readlines()
     with open(lite, 'r') as file:
@@ -51,5 +51,5 @@ rows = [['model_idx', 'tf_mem_req_to_load_model', 'lite_mem_req_to_load_model', 
 for i in range(1, 13825):
     data = parse_memory_profile(i)
     rows.append(data)
-write_2d_list_to_csv(rows, "pc_mem.csv")
+write_2d_list_to_csv(rows, "pi_mem.csv")
 
