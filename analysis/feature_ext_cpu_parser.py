@@ -4,7 +4,7 @@ import csv
 
 home_path = os.path.expanduser('~')
 root_path = os.path.abspath('./')
-data_path = f"{home_path}/feature_ext_profiler_result"
+data_path = f"{home_path}/feature_ext_profiler_result_new"
 
 os.makedirs(home_path + "/" + "logger", exist_ok=True)
 logging.basicConfig(level=logging.INFO,  
@@ -77,4 +77,4 @@ for device in range(1, 32):
         rows.append(row)
         i += 1
 
-write_2d_list_to_csv(rows, "feature_ext_cpuline.csv")
+write_2d_list_to_csv(rows, "new_feature_ext_cpuline.csv")
