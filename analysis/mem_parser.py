@@ -13,20 +13,22 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger(__name__)
 
 def parse_memory_profile(i):
-    tf = f'{home_path}/mem_utilization/pi/{i}_tf.txt'
-    lite = f'{home_path}/mem_utilization/pi/{i}_lite.txt'
+    tf = f'{home_path}/mem_utilization/orin/{i}_tf.txt'
+    lite = f'{home_path}/mem_utilization/orin/{i}_lite.txt'
     with open(tf, 'r') as file:
         tf_lines = file.readlines()
     with open(lite, 'r') as file:
         lite_lines = file.readlines()
-    tf_mem_req_to_load_model = float(tf_lines[21].split(" ")[14])
-    tf_mem_req_to_infer_model = float(tf_lines[26].split(" ")[14])
-    tf_total_mem = float(tf_lines[26].split(" ")[8])
+    
+    tf_mem_req_to_load_model = float(tf_lines[21].split(" ")[11])
+    tf_mem_req_to_infer_model = float(tf_lines[26].split(" ")[11])
+    tf_total_mem = float(tf_lines[26].split(" ")[7])
     
     lite_mem_req_to_load_model = float(lite_lines[6].split(" ")[15]) + float(lite_lines[7].split(" ")[15])
     lite_mem_req_to_infer_model = float(lite_lines[13].split(" ")[15])
     lite_total_mem = float(lite_lines[13].split(" ")[8])
     logger.info(f"{i} -- > DONE")
+    
     data = [
         i, 
         tf_mem_req_to_load_model, 
@@ -51,5 +53,6 @@ rows = [['model_idx', 'tf_mem_req_to_load_model', 'lite_mem_req_to_load_model', 
 for i in range(1, 13825):
     data = parse_memory_profile(i)
     rows.append(data)
-write_2d_list_to_csv(rows, "pi_mem.csv")
+
+write_2d_list_to_csv(rows, "orin_mem.csv")
 
