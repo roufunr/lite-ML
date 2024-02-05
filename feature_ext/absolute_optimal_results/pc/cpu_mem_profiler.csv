@@ -1,0 +1,21 @@
+filename,idx,cpu_line(nano seconds),memory(MiB)
+smallest,0,245340.0,66.5
+smallest,1,244556.0,66.6
+smallest,2,246432.0,66.7
+smallest,3,244641.0,66.5
+smallest,4,250741.0,66.3
+smallest,5,253425.0,66.7
+smallest,6,249226.0,66.6
+smallest,7,245156.0,66.2
+smallest,8,1378584.0,66.2
+smallest,9,279631.0,66.1
+largest,0,369418.0,66.6
+largest,1,371691.0,66.5
+largest,2,386105.0,66.2
+largest,3,384609.0,66.3
+largest,4,374113.0,66.6
+largest,5,372691.0,66.4
+largest,6,366330.0,66.6
+largest,7,364675.0,66.5
+largest,8,367056.0,66.2
+largest,9,369872.0,66.5
