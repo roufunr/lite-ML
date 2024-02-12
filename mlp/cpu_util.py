@@ -53,7 +53,13 @@ def get_data():
 X_train, X_test, y_train, y_test = get_data()
 
 def run_mlp():
-    mlp = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, activation=activation, solver=solver, alpha=alpha, learning_rate=learning_rate, warm_start=warm_start, max_iter=maximum_iteration)
+    mlp = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, 
+                        activation=activation, 
+                        solver=solver, 
+                        alpha=alpha, 
+                        learning_rate=learning_rate, 
+                        warm_start=warm_start, 
+                        max_iter=maximum_iteration)
     mlp.fit(X_train, y_train)
     y_pred = mlp.predict(X_test)
     return y_pred
