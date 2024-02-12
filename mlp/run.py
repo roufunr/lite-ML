@@ -120,7 +120,7 @@ final_result = {
     'results': results
 }
 with open('precision_recall_f1_time.json', 'w') as f:
-    json.dump(final_result, f, indent=4) 
+    json.dump(final_result, f, indent=4)
     
 
 
