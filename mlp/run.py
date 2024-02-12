@@ -10,6 +10,7 @@ import time
 from itertools import product
 from sklearn.metrics import precision_score, recall_score, f1_score
 import logging
+import json
 
 # Configure logging
 logging.basicConfig(filename='mlp.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -22,23 +23,24 @@ data_sizes = [50, 100, 200, 500, 1000, 2000, 3000, 5000, 10000]
 devices = [1, 2, 3, 4, 5, 6, 7, 9, 10, 13, 15, 18, 19, 20, 22, 23, 26, 27, 28, 31]
 data_base_path = "/home/rouf-linux/unsw/data"
 maximum_iteration = 100
-# param_grid = {
-#     'hidden_layer_sizes': [(50, 100, 150)], 
-#     'activation': ['relu'],
-#     'solver': ['adam'],
-#     'alpha': [0.01],
-#     'learning_rate': ['adaptive'],
-#     'warm_start': [True]
-# }
 
 param_grid = {
-    'hidden_layer_sizes': [(50,), (100,), (150,), (50, 50), (50, 100), (50, 150), (100, 50), (100, 100), (100, 150), (150, 50), (150, 100), (150, 150), (50, 50, 50), (50, 50, 100), (50, 50, 150), (50, 100, 50), (50, 100, 100), (50, 100, 150), (50, 150, 50), (50, 150, 100), (50, 150, 150), (100, 50, 50), (100, 50, 100), (100, 50, 150), (100, 100, 50), (100, 100, 100), (100, 100, 150), (100, 150, 50), (100, 150, 100), (100, 150, 150), (150, 50, 50), (150, 50, 100), (150, 50, 150), (150, 100, 50), (150, 100, 100), (150, 100, 150), (150, 150, 50), (150, 150, 100), (150, 150, 150)], 
-    'activation': ['identity','relu', 'tanh'],
-    'solver': ['sgd', 'adam', 'lbfgs'],
-    'alpha': [0.01, 0.001, 0.0001],
-    'learning_rate': ['constant', 'adaptive', 'invscaling'],
-    'warm_start': [True, False]
+    'hidden_layer_sizes': [(50, 100, 150)], 
+    'activation': ['relu'],
+    'solver': ['adam'],
+    'alpha': [0.01],
+    'learning_rate': ['adaptive'],
+    'warm_start': [True]
 }
+
+# param_grid = {
+#     'hidden_layer_sizes': [(50,), (100,), (150,), (50, 50), (50, 100), (50, 150), (100, 50), (100, 100), (100, 150), (150, 50), (150, 100), (150, 150), (50, 50, 50), (50, 50, 100), (50, 50, 150), (50, 100, 50), (50, 100, 100), (50, 100, 150), (50, 150, 50), (50, 150, 100), (50, 150, 150), (100, 50, 50), (100, 50, 100), (100, 50, 150), (100, 100, 50), (100, 100, 100), (100, 100, 150), (100, 150, 50), (100, 150, 100), (100, 150, 150), (150, 50, 50), (150, 50, 100), (150, 50, 150), (150, 100, 50), (150, 100, 100), (150, 100, 150), (150, 150, 50), (150, 150, 100), (150, 150, 150)], 
+#     'activation': ['identity','relu', 'tanh'],
+#     'solver': ['sgd', 'adam', 'lbfgs'],
+#     'alpha': [0.01, 0.001, 0.0001],
+#     'learning_rate': ['constant', 'adaptive', 'invscaling'],
+#     'warm_start': [True, False]
+# }
 
 def load_data(data_size):
     data_path = f"{data_base_path}/{data_size}"
@@ -68,7 +70,7 @@ X, y = load_data(200)
 X_train, X_test, y_train, y_test = split_data(X, y)
 
 results = []
-
+i = 1
 for hidden_layer_sizes, activation, solver, alpha, learning_rate, warm_start in product(*param_grid.values()):
     mlp = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, activation=activation, solver=solver, alpha=alpha, learning_rate=learning_rate, warm_start=warm_start, max_iter=maximum_iteration)
     
@@ -90,6 +92,7 @@ for hidden_layer_sizes, activation, solver, alpha, learning_rate, warm_start in 
     recall = recall_score(y_test, y_pred, average='weighted')
     f1 = f1_score(y_test, y_pred, average='weighted')
 
+    
     results.append({
         'hidden_layer_sizes': hidden_layer_sizes,
         'activation': activation,
@@ -100,18 +103,24 @@ for hidden_layer_sizes, activation, solver, alpha, learning_rate, warm_start in 
         'precision': precision,
         'recall': recall,
         'f1': f1,
-        'precision_per_class': precision_per_class,
-        'recall_per_class': recall_per_class,
-        'f1_per_class': f1_per_class,
+        'precision_per_class': tuple(precision_per_class),
+        'recall_per_class': tuple(recall_per_class),
+        'f1_per_class': tuple(f1_per_class),
         'train_time': train_time_end - train_time_start,
         'inference_time': inference_time_end - inference_time_start
     })
 
+    logging.info(f"{i} th model done")
     logging.info(f"hidden_layer_sizes: {hidden_layer_sizes}, activation: {activation}, solver: {solver}, alpha: {alpha}, learning_rate: {learning_rate}, warm_starts: {warm_start}")
     logging.info(f"precision: {precision}, recall: {recall}, f1: {f1}")
     logging.info(f"training_time: {train_time_end - train_time_start}, inference_time: {inference_time_end - inference_time_start}")
+    i+=1
 
-    
+final_result = {
+    'results': results
+}
+with open('precision_recall_f1_time.json', 'w') as f:
+    json.dump(final_result, f, indent=4) 
     
 
 
