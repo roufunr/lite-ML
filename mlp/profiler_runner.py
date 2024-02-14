@@ -27,7 +27,7 @@ params = []
 os.makedirs(f"{home_path}/mlp_profiler_result/", exist_ok=True)
 idx = 1
 for hidden_layer_sizes, activation, solver, alpha, learning_rate, warm_start in product(*param_grid.values()):
-    start_time = time.time()
+    
     hidden_layer_sizes =  "_".join(map(str, hidden_layer_sizes))
     params.append({
         'hidden_layer_sizes': hidden_layer_sizes,
@@ -39,8 +39,8 @@ for hidden_layer_sizes, activation, solver, alpha, learning_rate, warm_start in 
     })
 
 total_len = len(params)
-for idx in range(649, total_len):
-    
+for idx in range(650, total_len):
+    start_time = time.time()
     hidden_layer_sizes = params[idx]['hidden_layer_sizes']
     activation = params[idx]['activation']
     solver = params[idx]['solver']
@@ -59,4 +59,5 @@ for idx in range(649, total_len):
         except subprocess.CalledProcessError as e:
             logger.info(f"Command '{cmd}' failed with error: {e}")
     end_time = time.time()
-    logger.info(f"{idx} takes {end_time - start_time} s")
+    logger.info(f"{idx + 1} takes {end_time - start_time} s")
+    time.sleep(1)
