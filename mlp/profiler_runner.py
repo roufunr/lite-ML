@@ -48,8 +48,8 @@ for idx in range(0, total_len):
     learning_rate = params[idx]['learning_rate']
     warm_start = params[idx]['warm_start']
 
-    command1 = f'python cpu_util.py  {hidden_layer_sizes} {activation} {solver} {alpha} {learning_rate} {warm_start} > {home_path}/mlp_profiler_result/{idx + 1}_cpu.txt'
-    command2 = f'python mem_util.py  {hidden_layer_sizes} {activation} {solver} {alpha} {learning_rate} {warm_start} > {home_path}/mlp_profiler_result/{idx + 1}_mem.txt'
+    command1 = f'python3 cpu_util.py  {hidden_layer_sizes} {activation} {solver} {alpha} {learning_rate} {warm_start} > {home_path}/mlp_profiler_result/{idx + 1}_cpu.txt'
+    command2 = f'python3 mem_util.py  {hidden_layer_sizes} {activation} {solver} {alpha} {learning_rate} {warm_start} > {home_path}/mlp_profiler_result/{idx + 1}_mem.txt'
     commands = [command1, command2]
     for cmd in commands:
         try:
