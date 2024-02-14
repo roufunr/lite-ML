@@ -15,7 +15,7 @@ devices = [1, 2, 3, 4, 5, 6, 7, 9, 10, 13, 15, 18, 19, 20, 22, 23, 26, 27, 28, 3
 data_base_path = "/home/rouf/Documents/unsw_data/data"
 maximum_iteration = 100
 
-hidden_layer_sizes = ast.literal_eval(sys.argv[1])
+hidden_layer_sizes =  tuple([int(x) for x in sys.argv[1].split("_")])
 activation = sys.argv[2]
 solver = sys.argv[3]
 alpha = float(sys.argv[4])

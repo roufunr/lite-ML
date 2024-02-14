@@ -39,7 +39,7 @@ for hidden_layer_sizes, activation, solver, alpha, learning_rate, warm_start in 
     })
 
 total_len = len(params)
-for idx in range(650, total_len):
+for idx in range(760, total_len):
     start_time = time.time()
     hidden_layer_sizes = params[idx]['hidden_layer_sizes']
     activation = params[idx]['activation']
@@ -54,7 +54,7 @@ for idx in range(650, total_len):
     for cmd in commands:
         try:
             logger.info(f"{cmd} --- STARTED")
-            subprocess.run(cmd, shell=True, check=True)
+            result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
             logger.info(f"{cmd} --- DONE")
         except subprocess.CalledProcessError as e:
             logger.info(f"Command '{cmd}' failed with error: {e}")
