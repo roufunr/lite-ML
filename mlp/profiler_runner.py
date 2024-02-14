@@ -45,20 +45,20 @@ for idx in range(0, total_len):
     hidden_layer_sizes = params[idx]['hidden_layer_sizes']
     activation = params[idx]['activation']
     solver = params[idx]['solver']
-    alpha = params[idx]['alpha']
+    alpha = str(params[idx]['alpha'])
     learning_rate = params[idx]['learning_rate']
-    warm_start = params[idx]['warm_start']
+    warm_start = str(params[idx]['warm_start'])
 
-    command1 = f'python3 cpu_util.py  {hidden_layer_sizes} {activation} {solver} {alpha} {learning_rate} {warm_start} > {home_path}/mlp_profiler_result/{idx + 1}_cpu.txt'
-    command2 = f'python3 mem_util.py  {hidden_layer_sizes} {activation} {solver} {alpha} {learning_rate} {warm_start} > {home_path}/mlp_profiler_result/{idx + 1}_mem.txt'
+    command1 = "python3 cpu_util.py " + " " + hidden_layer_sizes + " " + activation + " " + solver + " " + alpha + " " + learning_rate + " " + warm_start + " > " + home_path + "/mlp_profiler_result/" + str(idx + 1) + "_cpu.txt"
+    command2 = "python3 mem_util.py " + " " + hidden_layer_sizes + " " + activation + " " + solver + " " + alpha + " " + learning_rate + " " + warm_start + " > " + home_path + "/mlp_profiler_result/" + str(idx + 1) + "_mem.txt"
     commands = [command1, command2]
     for cmd in commands:
         try:
-            logger.info(f"{cmd} --- STARTED")
+            logger.info(cmd +  " -> STARTED")
             result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
-            logger.info(f"{cmd} --- DONE")
+            logger.info(cmd +  " -> ENDED")
         except subprocess.CalledProcessError as e:
-            logger.info(f"Command '{cmd}' failed with error: {e}")
+            logger.info("Command " + cmd + " failed with error: " + e)
     end_time = time.time()
-    logger.info(f"{idx + 1} takes {end_time - start_time} s")
+    logger.info(str(idx + 1) + "takes " + str(end_time - start_time) + " s")
     time.sleep(1)
