@@ -24,7 +24,8 @@ param_grid = {
 }
 params = []
 
-os.makedirs(f"{home_path}/mlp_profiler_result/", exist_ok=True)
+os.makedirs(home_path + "/mlp_profiler_result", exist_ok=True)
+
 idx = 1
 for hidden_layer_sizes, activation, solver, alpha, learning_rate, warm_start in product(*param_grid.values()):
     
