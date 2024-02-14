@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger(__name__)
 param_grid = {
     'hidden_layer_sizes': [(50,), (100,), (150,), (50, 50), (50, 100), (50, 150), (100, 50), (100, 100), (100, 150), (150, 50), (150, 100), (150, 150), (50, 50, 50), (50, 50, 100), (50, 50, 150), (50, 100, 50), (50, 100, 100), (50, 100, 150), (50, 150, 50), (50, 150, 100), (50, 150, 150), (100, 50, 50), (100, 50, 100), (100, 50, 150), (100, 100, 50), (100, 100, 100), (100, 100, 150), (100, 150, 50), (100, 150, 100), (100, 150, 150), (150, 50, 50), (150, 50, 100), (150, 50, 150), (150, 100, 50), (150, 100, 100), (150, 100, 150), (150, 150, 50), (150, 150, 100), (150, 150, 150)], 
-    # 'hidden_layer_sizes': [(50,), (100,), (150,), (50, 50), ], 
+    # 'hidden_layer_sizes': [(50, 50, 150)], 
     'activation': ['identity','relu', 'tanh'],
     'solver': ['sgd', 'adam', 'lbfgs'],
     'alpha': [0.01, 0.001, 0.0001],
@@ -58,7 +58,7 @@ for idx in range(0, total_len):
             result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
             logger.info(cmd +  " -> ENDED")
         except subprocess.CalledProcessError as e:
-            logger.info("Command " + cmd + " failed with error: " + e)
+            logger.info("Command " + cmd + " failed with error: " + str(e))
     end_time = time.time()
-    logger.info(str(idx + 1) + "takes " + str(end_time - start_time) + " s")
-    time.sleep(1)
+    logger.info(str(idx + 1) + " takes " + str(end_time - start_time) + " s")
+    time.sleep(0.1)
