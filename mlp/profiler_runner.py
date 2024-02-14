@@ -39,7 +39,7 @@ for hidden_layer_sizes, activation, solver, alpha, learning_rate, warm_start in 
     })
 
 total_len = len(params)
-for idx in range(760, total_len):
+for idx in range(0, total_len):
     start_time = time.time()
     hidden_layer_sizes = params[idx]['hidden_layer_sizes']
     activation = params[idx]['activation']
