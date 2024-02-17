@@ -12,7 +12,7 @@ split_fraction = 0.2
 random_number = 42
 data_sizes = [50, 100, 200, 500, 1000, 2000, 3000, 5000, 10000]
 devices = [1, 2, 3, 4, 5, 6, 7, 9, 10, 13, 15, 18, 19, 20, 22, 23, 26, 27, 28, 31]
-data_base_path = "/home/orin/unsw_data/data"
+data_base_path = "/home/rouf/Documents/unsw_data/data"
 maximum_iteration = 100
 
 hidden_layer_sizes =  tuple([int(x) for x in sys.argv[1].split("_")])
