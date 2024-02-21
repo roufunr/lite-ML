@@ -14,7 +14,7 @@ random_number = 42
 start_time = time.time()
 data_sizes = [50, 100, 200, 500, 1000, 2000, 3000, 5000, 10000]
 devices = [1, 2, 3, 4, 5, 6, 7, 9, 10, 13, 15, 18, 19, 20, 22, 23, 26, 27, 28, 31]
-data_base_path = "/home/rouf-linux/unsw/data"
+data_base_path = "/home/rouf-linux/unsw_data/data"
 maximum_iteration = 100
 
 def load_data(data_size):
@@ -60,7 +60,7 @@ param_grid = {
     'solver': ['sgd', 'adam', 'lbfgs'],
     'alpha': [0.01, 0.001, 0.0001],
     'learning_rate': ['constant', 'adaptive', 'invscaling'],
-    'warm_starts': [True, False]
+    'warm_start': [True, False]
 }
 
 
