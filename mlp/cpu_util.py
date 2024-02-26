@@ -6,7 +6,6 @@ from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import precision_score, recall_score, f1_score
 import sys
-import ast
 
 split_fraction = 0.2
 random_number = 42
