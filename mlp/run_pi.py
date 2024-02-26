@@ -13,7 +13,7 @@ import logging
 import json
 
 # Configure logging
-logging.basicConfig(filename='mlp_pi.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(filename='/home/rouf/logger/mlp_pi.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 split_fraction = 0.2
@@ -120,6 +120,7 @@ for hidden_layer_sizes, activation, solver, alpha, learning_rate, warm_start in 
 
     
     results.append({
+        'idx': i,
         'hidden_layer_sizes': hidden_layer_sizes,
         'activation': activation,
         'solver': solver,
@@ -142,11 +143,14 @@ for hidden_layer_sizes, activation, solver, alpha, learning_rate, warm_start in 
     logging.info(f"training_time: {train_time_end - train_time_start}, inference_time: {inference_time_end - inference_time_start}")
     i+=1
 
-final_result = {
-    'results': results
-}
-with open('precision_recall_f1_time.json', 'w') as f:
-    json.dump(final_result, f, indent=4)
+
+    final_result = {
+        'results': results
+    }
+    with open('PI_precision_recall_f1_time.json', 'w') as f:
+        json.dump(final_result, f, indent=4)
+
+    time.sleep(0.5)
     
 
 
