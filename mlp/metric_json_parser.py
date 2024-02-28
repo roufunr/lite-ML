@@ -2,7 +2,7 @@ import json
 import pandas as pd
 
 # Assuming you have a JSON file named data.json
-with open('/home/rouf/Documents/code/lite-ML/mlp/orin_precision_recall_f1_time.json', 'r') as file:
+with open('/home/rouf-linux/lite-ML/mlp/PI_precision_recall_f1_time.json', 'r') as file:
     data_dict = json.load(file)
 
 results_list = data_dict["results"]
@@ -54,4 +54,4 @@ for i in range(total_len):
 print(rows)
 
 df = pd.DataFrame(rows)
-df.to_csv("metric_orin.csv")
+df.to_csv("metric_pi.csv")
